@@ -1,3 +1,5 @@
+![](images/MysteryCrewLogo.PNG) 
+
 # My Java Project
 
 This is my Project.

@@ -1,4 +1,4 @@
-![](images/MysteryCrewLogo.PNG) 
+![](images/MysteryCrewLogo.png) 
 
 # My Java Project
 

@@ -1,4 +1,6 @@
 module org.mysterycrew {
     requires javafx.controls;
-    exports org.mysterycrew;
+    requires java.rmi;
+    requires org.apache.commons.lang3;
+    exports JavaFX;
 }

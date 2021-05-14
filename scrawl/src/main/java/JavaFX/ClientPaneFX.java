@@ -50,18 +50,18 @@ public class ClientPaneFX extends Application {
         var javaVersion = System.getProperty("java.version");
         var javafxVersion = System.getProperty("javafx.version");
         Label label = new Label("JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        label.setStyle("-fx-font-weight: bold; -fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 15;");
+        label.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 14; -fx-text-fill: #242c37;");
 
         wordToGuess = new Label();
         wordToGuess.setText(showWordToGuess());
         wordToGuess.setPrefHeight(50);
-        wordToGuess.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-font-family: 'JetBrains Mono Medium';");
+        wordToGuess.setStyle("-fx-text-fill: #242c37;-fx-font-weight: bold; -fx-font-size: 20; -fx-font-family: 'JetBrains Mono Medium';");
 
         users = new TextArea("LEADERBOARD");
         users.setEditable(false);
         users.setPrefHeight(290);
         users.setMaxWidth(250);
-        users.setStyle("-fx-control-inner-background: #2C3030;-fx-text-fill: #ffff;-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';");
+        users.setStyle("-fx-control-inner-background: #242c37;-fx-text-fill: #ffff;-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';");
 
         HBox bottom = new HBox();
         bottom.setStyle("-fx-background-color: #171A1A;");
@@ -71,13 +71,13 @@ public class ClientPaneFX extends Application {
 
         chatSection = new TextArea();
         chatSection.setStyle("-fx-control-inner-background: #171A1A; -fx-highlight-fill: #171A1A; -fx-highlight-text-fill: #ffff; -fx-text-fill: #ffff;" +
-                             "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';");
+                "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';");
         chatSection.setEditable(false);
         chatSection.setPrefHeight(569);
         chatSection.setPrefWidth(280);
 
         chatField = new TextField();
-        chatField.setStyle("-fx-background-color: #2C3030; -fx-text-fill: #ffff;");
+        chatField.setStyle("-fx-background-color: #242c37; -fx-text-fill: #ffff;");
         chatField.setPrefHeight(51);
         chatField.setPromptText("Type your guess here...");
         chatField.setOnKeyPressed(this::sendMessage);
@@ -160,7 +160,7 @@ public class ClientPaneFX extends Application {
 
         Button clear = new Button("CLEAR CANVAS");
         clear.setPadding(new Insets(8, 8, 8, 8));
-        clear.setStyle("-fx-background-color: #404747; -fx-text-fill: #ffff;");
+        clear.setStyle("-fx-background-color: #242c37; -fx-text-fill: #ffff;");
         clear.setOnMouseClicked(this::clearCanvas);
 
         Label curColor = new Label("COLOR: BLACK");
@@ -215,22 +215,22 @@ public class ClientPaneFX extends Application {
     }
 
     public void processColorChange(ActionEvent event) {
-       if (event.getSource().equals(btnColorGreen)){
+        if (event.getSource().equals(btnColorGreen)){
             color = "Green";
-       }else if (event.getSource().equals(btnColorBlack)){
+        }else if (event.getSource().equals(btnColorBlack)){
             color = "Black";
-       }else if (event.getSource().equals(btnColorOrange)){
+        }else if (event.getSource().equals(btnColorOrange)){
             color = "Orange";
-       }else if (event.getSource().equals(btnColorBlue)){
+        }else if (event.getSource().equals(btnColorBlue)){
             color = "Blue";
-       }else if (event.getSource().equals(btnColorRed)){
+        }else if (event.getSource().equals(btnColorRed)){
             color = "Red";
-       }else if(event.getSource().equals(btnColorPurple)) {
+        }else if(event.getSource().equals(btnColorPurple)) {
             color = "Purple";
-       }else if(event.getSource().equals(btnColorPink)) {
-           color = "Pink";
-       }else
-           color = "Yellow";
+        }else if(event.getSource().equals(btnColorPink)) {
+            color = "Pink";
+        }else
+            color = "Yellow";
     }
 
     private void clearCanvas(MouseEvent mouseEvent) {
@@ -260,18 +260,18 @@ public class ClientPaneFX extends Application {
     private String showWordToGuess(){
         Scanner scan;
         List<String> wordsEveryoneCanSee = new ArrayList<>();
-       //List<String> wordsOnlyThePlayerCanSee = new ArrayList<>();
+        //List<String> wordsOnlyThePlayerCanSee = new ArrayList<>();
         String  wrd = "" ,wordEveryoneCanSee= "";
         try {
 
             scan = new Scanner(new File("src/main/java/WordsToGuess.txt"));
             while (scan.hasNext()){
-               wordsEveryoneCanSee.add(scan.nextLine());
-              // wordsOnlyThePlayerCanSee.add(scan.nextLine());
+                wordsEveryoneCanSee.add(scan.nextLine());
+                // wordsOnlyThePlayerCanSee.add(scan.nextLine());
             }
             for (int i = 0; i < wordsEveryoneCanSee.get(i).length(); i++) {
-                    wrd = wordsEveryoneCanSee.get(i);
-                    wordEveryoneCanSee = wrd.charAt(0) + StringUtils.repeat("_", (i-1)) + wrd.charAt(wrd.length()-1);
+                wrd = wordsEveryoneCanSee.get(i);
+                wordEveryoneCanSee = wrd.charAt(0) + StringUtils.repeat("_", (i-1)) + wrd.charAt(wrd.length()-1);
             }
             scan.close();
             return wordEveryoneCanSee.toUpperCase();
@@ -304,7 +304,7 @@ public class ClientPaneFX extends Application {
     }
 
     public static void main (String[]args){
-            launch(args);
+        launch(args);
     }
 
 }

@@ -45,7 +45,6 @@ public class ClientPaneFX extends Application {
         coord.setText("(" + x + "," + y + ")");
     }
 
-
     public void start(Stage primaryStage) {
 
         var javaVersion = System.getProperty("java.version");

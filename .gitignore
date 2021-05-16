@@ -3,6 +3,9 @@
  # Compiled class file
  *.class
 
+ # Folder generated from the maven compiler
+/target/
+
  # Log file
  *.log
 

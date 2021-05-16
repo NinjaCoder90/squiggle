@@ -1,20 +1,20 @@
 package GUI;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
@@ -24,6 +24,8 @@ import javafx.scene.canvas.GraphicsContext;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -33,86 +35,135 @@ public class ClientPaneFX extends Application {
     private Label coord,wordToGuess;
     private final Canvas canvas = new Canvas(690, 620);
     private final GraphicsContext gc = canvas.getGraphicsContext2D();
-    private RadioButton rb1,rb2;
+    private ToggleButton btnDraw,btnClear;
     private String color = "black";
-    private Double x1 = null;
-    private Double y1 = null;
+    private Double x1 = null,y1 = null;
+    private Stage primaryStage;
     private Button btnColorRed,btnColorBlack,btnColorGreen,btnColorPurple,btnColorPink,btnColorOrange,btnColorBlue;
     private TextArea users,chatSection;
     private TextField chatField;
+    private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
+    private List<String> message;
 
     private void updateCoord(double x, double y) {
         coord.setText("(" + x + "," + y + ")");
     }
 
-    public void start(Stage primaryStage) {
+    @Override
+    public void start(Stage primaryStage) throws FileNotFoundException{
 
-        var javaVersion = System.getProperty("java.version");
-        var javafxVersion = System.getProperty("javafx.version");
-        Label label = new Label("JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        label.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 14; -fx-text-fill: #242c37;");
+        this.primaryStage = primaryStage;
+
+        labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 14; -fx-text-fill: #242c37;");
+
+        ImageView scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
+        scrawlLogoView.setStyle("-fx-fit-to-width: 300;-fx-fit-to-height: 355");
+        scrawlLogoView.setPreserveRatio(true);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Lorem ipsum dolor sit amet, consectetur adipiscing elit," +
+                " sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ",ButtonType.OK);
+        Hyperlink howToPlay = new Hyperlink("How to Play");
+        howToPlay.setStyle("-fx-font-size: 18;");
+        howToPlay.setOnMouseClicked(e ->  alert.show());
+
+        TextField userName = new TextField();
+        userName.setStyle("-fx-max-width: 330;-fx-pref-height: 35;-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;");
+        userName.setPromptText("Enter your name");
+
+        Button start = new Button("PLAY!");
+        start.setStyle("-fx-background-color: #5cb85c; -fx-font-weight: bold; -fx-pref-width: 330; -fx-text-fill: #fff; -fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';" +
+                        "-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;");
+        start.setOnMouseEntered(e -> start.setStyle("-fx-background-color: #449D44; -fx-font-weight: bold; -fx-text-fill: #fff;-fx-pref-width: 330; " +
+                        "-fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;"));
+        start.setOnMouseExited(e -> start.setStyle("-fx-background-color: #5cb85c;-fx-font-weight: bold; -fx-text-fill: #fff;-fx-pref-width: 330;" +
+                         " -fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;"));
+        start.setOnMouseClicked(this::secondStage);
+
+        VBox startSection = new VBox();
+        startSection.getChildren().addAll(scrawlLogoView,howToPlay,userName,start,labelSystemInfo);
+        startSection.setStyle("-fx-spacing: 10; -fx-pref-height: 700;-fx-pref-width: 1350; -fx-alignment: center");
+        Scene scene = new Scene(startSection);
+
+        primaryStage.getIcons().add(new Image(new File("src/main/resources/favicon.png").toURI().toString()));//ICON from FlatIcon By Freepik
+        primaryStage.setTitle("Scrawl Game");
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
+
+    private void secondStage(MouseEvent mouseEvent) {
+
+        labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 12; -fx-text-fill: #242c37;");
 
         wordToGuess = new Label();
         wordToGuess.setText(showWordToGuess());
-        wordToGuess.setPrefHeight(50);
-        wordToGuess.setStyle("-fx-text-fill: #242c37;-fx-font-weight: bold; -fx-font-size: 20; -fx-font-family: 'JetBrains Mono Medium';");
+        wordToGuess.setStyle("-fx-pref-height: 25;-fx-text-fill: #242c37;-fx-font-weight: bold; -fx-font-size: 18; -fx-font-family: 'JetBrains Mono Medium';");
 
         users = new TextArea("LEADERBOARD");
+        users.setStyle("-fx-max-width: 250; -fx-pref-height: 290;-fx-background-color: #242c37;-fx-control-inner-background: #242c37;-fx-font-weight: bold; " +
+                        "-fx-text-fill: #fff;-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';" +
+                        "-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;-fx-text-box-border: transparent;-fx-faint-focus-color: transparent;" +
+                        "-fx-focus-color: transparent;-fx-padding: 10");
         users.setEditable(false);
-        users.setPrefHeight(290);
-        users.setMaxWidth(250);
-        users.setStyle("-fx-control-inner-background: #242c37;-fx-text-fill: #ffff;-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';");
-
-        HBox bottom = new HBox();
-        bottom.setStyle("-fx-background-color: #171A1A;");
-        bottom.setAlignment(Pos.CENTER);
-        final ToggleGroup options = new ToggleGroup();
-        BorderPane borderPane = new BorderPane();
 
         chatSection = new TextArea();
-        chatSection.setStyle("-fx-control-inner-background: #171A1A; -fx-highlight-fill: #171A1A; -fx-highlight-text-fill: #ffff; -fx-text-fill: #ffff;" +
-                "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';");
+        chatSection.setStyle("-fx-pref-height: 540;-fx-pref-width: 280;-fx-background-color: #171A1A; -fx-control-inner-background: #171A1A;-fx-text-box-border: transparent; -fx-text-fill: #fff;" +
+                "-fx-faint-focus-color: transparent;-fx-focus-color: transparent;" +
+                "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-padding: 10;");
         chatSection.setEditable(false);
-        chatSection.setPrefHeight(569);
-        chatSection.setPrefWidth(280);
 
         chatField = new TextField();
-        chatField.setStyle("-fx-background-color: #242c37; -fx-text-fill: #ffff;");
-        chatField.setPrefHeight(51);
+        chatField.setStyle("-fx-pref-height: 40;-fx-background-color: #242c37; -fx-text-fill: #ffff;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        chatField.setMaxWidth(240);
         chatField.setPromptText("Type your guess here...");
         chatField.setOnKeyPressed(this::sendMessage);
 
-        VBox rightSection = new VBox();
-        rightSection.getChildren().addAll(chatSection,chatField);
-
-        HBox marginRightSection = new HBox();
-        marginRightSection.getChildren().add(rightSection);
-        HBox.setMargin(rightSection, new Insets(60, 20, 39, 30));
+        VBox rightPane = new VBox();
+        rightPane.setStyle("-fx-pref-height: 620;-fx-alignment: center;-fx-background-color: #171A1A;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        rightPane.getChildren().addAll(chatSection,chatField);
+        HBox marginRightPane = new HBox();
+        marginRightPane.getChildren().addAll(rightPane);
+        HBox.setMargin(rightPane, new Insets(40, 20, 30, 30));
 
         VBox marginCanvas = new VBox();
-        marginCanvas.getChildren().addAll(wordToGuess,canvas,label);
-        marginCanvas.setAlignment(Pos.CENTER);
-        marginCanvas.setSpacing(10);
+        marginCanvas.getChildren().addAll(wordToGuess,canvas,labelSystemInfo);
+        marginCanvas.setStyle("-fx-alignment: center;-fx-spacing: 7;");
 
-        VBox sidePane = new VBox();
-        sidePane.setStyle("-fx-background-color: #171A1A;");
-        sidePane.setAlignment(Pos.CENTER);
-        HBox marginSideSection = new HBox();
-        marginSideSection.getChildren().addAll(sidePane);
-        HBox.setMargin(sidePane, new Insets(60, 30, 39, 20));
+        VBox leftPane = new VBox();
+        leftPane.setStyle("-fx-background-color: #171A1A;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        leftPane.setAlignment(Pos.CENTER);
 
-        rb1 = new RadioButton("DRAW");
-        rb1.setStyle("-fx-text-fill: #ffff;");
-        rb1.setToggleGroup(options);
-        rb1.setSelected(true);
+        HBox marginLeftPane = new HBox();
+        marginLeftPane.getChildren().addAll(leftPane);
+        HBox.setMargin(leftPane, new Insets(40, 30, 30, 20));
 
-        rb2  = new RadioButton("ERASE");
-        rb2.setStyle("-fx-text-fill: #ffff;");
-        rb2.setToggleGroup(options);
-        HBox radioButtonSection = new HBox();
-        radioButtonSection.setSpacing(45.0);
-        radioButtonSection.setAlignment(Pos.CENTER);
-        radioButtonSection.getChildren().addAll(rb1,rb2);
+        final ToggleGroup options = new ToggleGroup();
+
+        ImageView imageview = new ImageView(new Image(new File("src/main/resources/eraser.png").toURI().toString()));
+        imageview.setFitHeight(30);
+        imageview.setFitWidth(30);
+        btnClear = new ToggleButton();
+        btnClear.setGraphic(imageview);
+        btnClear.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        btnClear.setOnMouseEntered(e -> btnClear.setStyle("-fx-background-color: #3c4458;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        btnClear.setOnMouseExited(e -> btnClear.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        btnClear.setToggleGroup(options);
+        btnClear.setTooltip(new Tooltip("ERASER \nErase part of the picture\nand replace it with the background color."));
+
+        ImageView imageviewDraw = new ImageView(new Image(new File("src/main/resources/pencil_64px.png").toURI().toString()));
+        imageviewDraw.setFitHeight(30);
+        imageviewDraw.setFitWidth(30);
+        btnDraw = new ToggleButton();
+        btnDraw.setGraphic(imageviewDraw);
+        btnDraw.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        btnDraw.setOnMouseEntered(e -> btnDraw.setStyle("-fx-background-color: #3c4458;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        btnDraw.setOnMouseExited(e -> btnDraw.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        btnDraw.setToggleGroup(options);
+        btnDraw.setTooltip(new Tooltip("PENCIL\nDraw a free form line with the\nselected color."));
+
+        HBox utilitiesBtnSection = new HBox();
+        utilitiesBtnSection.setStyle("-fx-alignment: center;-fx-spacing: 20");
+        utilitiesBtnSection.getChildren().addAll(btnDraw,btnClear);
 
         HBox colorSection1 = new HBox();
 
@@ -132,8 +183,7 @@ public class ClientPaneFX extends Application {
         btnColorPink.setStyle("-fx-background-color: #af09bd;-fx-pref-height: 30; -fx-pref-width: 30");
         btnColorPink.setOnAction(this::processColorChange);
 
-        colorSection1.setSpacing(15.0);
-        colorSection1.setAlignment(Pos.CENTER);
+        colorSection1.setStyle("-fx-spacing: 10;-fx-alignment: center");
         colorSection1.getChildren().addAll(btnColorRed, btnColorBlack, btnColorBlue,btnColorPink);
 
         HBox colorSection2 = new HBox();
@@ -154,14 +204,15 @@ public class ClientPaneFX extends Application {
         btnColorPurple.setStyle("-fx-background-color: #460fe7;-fx-pref-height: 30; -fx-pref-width: 30");
         btnColorPurple.setOnAction(this::processColorChange);
 
-        colorSection2.setSpacing(15.0);
-        colorSection2.setAlignment(Pos.CENTER);
+        colorSection2.setStyle("-fx-spacing: 10;-fx-alignment: center");
         colorSection2.getChildren().addAll(btnColorYellow,btnColorOrange,btnColorGreen,btnColorPurple);
 
-        Button clear = new Button("CLEAR CANVAS");
-        clear.setPadding(new Insets(8, 8, 8, 8));
-        clear.setStyle("-fx-background-color: #242c37; -fx-text-fill: #ffff;");
-        clear.setOnMouseClicked(this::clearCanvas);
+        Button clearCanvas = new Button("CLEAR CANVAS");
+        clearCanvas.setPadding(new Insets(8, 8, 8, 8));
+        clearCanvas.setStyle("-fx-background-color: #242c37;-fx-font-weight: bold; -fx-text-fill: #fff;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        clearCanvas.setOnMouseEntered(e -> clearCanvas.setStyle("-fx-background-color: #3c4458;-fx-font-weight: bold; -fx-text-fill: #fff; -fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        clearCanvas.setOnMouseExited(e -> clearCanvas.setStyle("-fx-background-color: #242c37;-fx-font-weight: bold; -fx-text-fill: #fff; -fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        clearCanvas.setOnMouseClicked(this::clearCanvas);
 
         Label curColor = new Label("COLOR: BLACK");
         curColor.setStyle("-fx-text-fill: #ffff;");
@@ -169,22 +220,20 @@ public class ClientPaneFX extends Application {
         coord = new Label("(x, y)");
         coord.setStyle("-fx-text-fill: #ffff; -fx-min-width: 87");
 
-        sidePane.getChildren().addAll(users,coord,radioButtonSection,colorSection1,colorSection2,clear);
-        sidePane.setPrefWidth(280);
-        sidePane.setMaxHeight(685);
-        sidePane.setSpacing(25.0);
-
-        Pane center = new Pane();
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, 690, 620);
-        gc.setLineCap(StrokeLineCap.ROUND);
-        gc.setLineWidth(8);
-        gc.setLineJoin(StrokeLineJoin.ROUND);
+        leftPane.getChildren().addAll(users,utilitiesBtnSection,colorSection1,colorSection2,clearCanvas);
+        leftPane.setPrefWidth(280);
+        leftPane.setSpacing(25.0);
 
         BoxBlur blur = new BoxBlur();
         blur.setWidth(3);
         blur.setHeight(3);
         blur.setIterations(6);
+
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, 690, 620);
+        gc.setLineCap(StrokeLineCap.ROUND);
+        gc.setLineWidth(8);
+        gc.setLineJoin(StrokeLineJoin.ROUND);
         gc.setEffect(blur);
 
         canvas.setOnMouseMoved(this::cursorMoved);
@@ -193,28 +242,26 @@ public class ClientPaneFX extends Application {
         canvas.setOnMouseExited(this::cursorExit);
         canvas.setOnMouseReleased(this::cursorReleased);
 
-        center.getChildren().add(marginCanvas);
-        borderPane.setLeft(marginSideSection);
-        borderPane.setTop(bottom);
-        borderPane.setCenter(center);
-        borderPane.setRight(marginRightSection);
-        Scene scene = new Scene(borderPane);
-        primaryStage.getIcons().add(new Image(new File("src/main/resources/pencil_512px.png").toURI().toString()));//ICON from FlatIcon By Freepik
-        primaryStage.setTitle("scrawl Game");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        BorderPane rootPane = new BorderPane();
+        rootPane.setLeft(marginLeftPane);
+        rootPane.setCenter(marginCanvas);
+        rootPane.setRight(marginRightPane);
+
+        Scene secondStage = new Scene(rootPane);
+        primaryStage.setScene(secondStage);
     }
 
     private void sendMessage(KeyEvent keyEvent) {
-        List<String> message = new ArrayList<>();
+        message = new ArrayList<>();
         if (keyEvent.getCode() == KeyCode.ENTER){
+            message.add(chatField.getText());
             chatSection.appendText(chatField.getText() + "\n");
             chatField.clear();
         }
     }
 
     public void processColorChange(ActionEvent event) {
+        btnDraw.setSelected(true);
         if (event.getSource().equals(btnColorGreen)){
             color = "Green";
         }else if (event.getSource().equals(btnColorBlack)){
@@ -235,7 +282,7 @@ public class ClientPaneFX extends Application {
 
     private void clearCanvas(MouseEvent mouseEvent) {
         gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, 690, 620);
+        gc.fillRect(0, 0, 695, 625);
     }
 
     private void cursorReleased(MouseEvent mouseEvent) {
@@ -248,10 +295,10 @@ public class ClientPaneFX extends Application {
     }
 
     private void cursorClick(MouseEvent mouseEvent) {
-        if (rb1.isSelected()) {
+        if (btnDraw.isSelected()) {
             gc.setStroke(Color.valueOf(color));
             gc.strokeLine(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
-        } else if (rb2.isSelected()) {
+        } else if (btnClear.isSelected()) {
             gc.setFill(Color.WHITE);
             gc.fillOval(mouseEvent.getX(),mouseEvent.getY(),10, 10);
         }
@@ -277,13 +324,12 @@ public class ClientPaneFX extends Application {
             return wordEveryoneCanSee.toUpperCase();
 
         }catch (Exception exception){
-            exception.printStackTrace();
             return null;
         }
     }
 
     private void cursorDragged(MouseEvent mouseEvent) {
-        if (rb1.isSelected()) {
+        if (btnDraw.isSelected()) {
             if ((x1 == null && y1 == null)) {
                 x1 = mouseEvent.getX();
                 y1 = mouseEvent.getY();
@@ -292,7 +338,7 @@ public class ClientPaneFX extends Application {
             gc.strokeLine(x1, y1, mouseEvent.getX(), mouseEvent.getY());
             x1 = mouseEvent.getX();
             y1 = mouseEvent.getY();
-        } else if (rb2.isSelected()) {
+        } else if (btnClear.isSelected()) {
             gc.setFill(Color.WHITE);
             gc.fillOval(mouseEvent.getX(),mouseEvent.getY(),10, 10 );
         }

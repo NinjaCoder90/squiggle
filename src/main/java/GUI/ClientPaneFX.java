@@ -107,7 +107,7 @@ public class ClientPaneFX extends Application {
         users.setEditable(false);
 
         chatSection = new TextArea();
-        chatSection.setStyle("-fx-pref-height: 540;-fx-pref-width: 280;-fx-background-color: #171A1A; -fx-control-inner-background: #171A1A;-fx-text-box-border: transparent; -fx-text-fill: #fff;" +
+        chatSection.setStyle("-fx-pref-height: 540;-fx-pref-width: 280;-fx-background-color: #151a21; -fx-control-inner-background: #151a21;-fx-text-box-border: transparent; -fx-text-fill: #fff;" +
                 "-fx-faint-focus-color: transparent;-fx-focus-color: transparent;" +
                 "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-padding: 10;");
         chatSection.setEditable(false);
@@ -130,7 +130,7 @@ public class ClientPaneFX extends Application {
         marginCanvas.setStyle("-fx-alignment: center;-fx-spacing: 7;");
 
         VBox leftPane = new VBox();
-        leftPane.setStyle("-fx-background-color: #171A1A;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        leftPane.setStyle("-fx-background-color: #151a21;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
         leftPane.setAlignment(Pos.CENTER);
 
         HBox marginLeftPane = new HBox();

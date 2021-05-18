@@ -1,11 +1,11 @@
 package GUI;
 
+import Client.Client;
+import Server.Server;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.BoxBlur;
@@ -16,6 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.stage.Stage;
@@ -26,27 +27,38 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static javafx.scene.shape.Path.*;
+
 public class ClientPaneFX extends Application {
 
+    private static final long serialVersionUID = 1L;
     private Label coord,wordToGuess;
-    private final Canvas canvas = new Canvas(690, 620);
-    private final GraphicsContext gc = canvas.getGraphicsContext2D();
+    public final Canvas canvas = new Canvas(690, 620);
+    public final GraphicsContext gc = canvas.getGraphicsContext2D();
     private ToggleButton btnDraw,btnClear;
-    private String color = "black";
+    private String color = "black",name;
     private Double x1 = null,y1 = null;
-    private Stage primaryStage;
+    private Client chatClient;
+    public Stage primaryStage;
     private Button btnColorRed,btnColorBlack,btnColorGreen,btnColorPurple,btnColorPink,btnColorOrange,btnColorBlue;
-    private TextArea users,chatSection;
-    private TextField chatField;
+    public TextArea chatSection;
+    public TextArea users;
+    private final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
-    private List<String> message;
+    private String message1;
+    private TextField userName;
 
     private void updateCoord(double x, double y) {
         coord.setText("(" + x + "," + y + ")");
+    }
+
+    public static void main (String[]args){
+        launch(args);
     }
 
     @Override
@@ -66,7 +78,7 @@ public class ClientPaneFX extends Application {
         howToPlay.setStyle("-fx-font-size: 18;");
         howToPlay.setOnMouseClicked(e ->  alert.show());
 
-        TextField userName = new TextField();
+        userName = new TextField();
         userName.setStyle("-fx-max-width: 330;-fx-pref-height: 35;-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;");
         userName.setPromptText("Enter your name");
 
@@ -78,12 +90,14 @@ public class ClientPaneFX extends Application {
         start.setOnMouseExited(e -> start.setStyle("-fx-background-color: #5cb85c;-fx-font-weight: bold; -fx-text-fill: #fff;-fx-pref-width: 330;" +
                          " -fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;"));
         start.setOnMouseClicked(this::secondStage);
+        //start.setOnMouseClicked(this::comunicate);
 
         VBox startSection = new VBox();
         startSection.getChildren().addAll(scrawlLogoView,howToPlay,userName,start,labelSystemInfo);
         startSection.setStyle("-fx-spacing: 10; -fx-pref-height: 700;-fx-pref-width: 1350; -fx-alignment: center");
         Scene scene = new Scene(startSection);
 
+        onCloseStageEvent();
         primaryStage.getIcons().add(new Image(new File("src/main/resources/favicon.png").toURI().toString()));//ICON from FlatIcon By Freepik
         primaryStage.setTitle("Scrawl Game");
         primaryStage.setScene(scene);
@@ -91,7 +105,28 @@ public class ClientPaneFX extends Application {
         primaryStage.show();
     }
 
+    private void onCloseStageEvent(){
+        primaryStage.setOnCloseRequest(e -> {
+            if(chatClient != null){
+                try {
+                    chatClient.serverInterface.leaveChat(name);
+                } catch (RemoteException exception) {
+                    exception.printStackTrace();
+                }
+            }
+            System.exit(0);
+        }
+      );
+    }
+
     private void secondStage(MouseEvent mouseEvent) {
+
+        try {
+            name = userName.getText();
+            getConnected(name);
+        } catch (RemoteException e) {
+            e.getMessage();
+        }
 
         labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 12; -fx-text-fill: #242c37;");
 
@@ -112,7 +147,7 @@ public class ClientPaneFX extends Application {
                 "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-padding: 10;");
         chatSection.setEditable(false);
 
-        chatField = new TextField();
+
         chatField.setStyle("-fx-pref-height: 40;-fx-background-color: #242c37; -fx-text-fill: #ffff;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
         chatField.setMaxWidth(240);
         chatField.setPromptText("Type your guess here...");
@@ -251,14 +286,6 @@ public class ClientPaneFX extends Application {
         primaryStage.setScene(secondStage);
     }
 
-    private void sendMessage(KeyEvent keyEvent) {
-        message = new ArrayList<>();
-        if (keyEvent.getCode() == KeyCode.ENTER){
-            message.add(chatField.getText());
-            chatSection.appendText(chatField.getText() + "\n");
-            chatField.clear();
-        }
-    }
 
     public void processColorChange(ActionEvent event) {
         btnDraw.setSelected(true);
@@ -309,6 +336,7 @@ public class ClientPaneFX extends Application {
         List<String> wordsEveryoneCanSee = new ArrayList<>();
         //List<String> wordsOnlyThePlayerCanSee = new ArrayList<>();
         String  wrd = "" ,wordEveryoneCanSee= "";
+        //Path path = Path.of("src/main/resources/WordsToGuess.txt");
         try {
 
             scan = new Scanner(new File("src/main/resources/WordsToGuess.txt"));
@@ -328,7 +356,7 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    private void cursorDragged(MouseEvent mouseEvent) {
+    private void cursorDragged(MouseEvent mouseEvent){
         if (btnDraw.isSelected()) {
             if ((x1 == null && y1 == null)) {
                 x1 = mouseEvent.getX();
@@ -338,9 +366,19 @@ public class ClientPaneFX extends Application {
             gc.strokeLine(x1, y1, mouseEvent.getX(), mouseEvent.getY());
             x1 = mouseEvent.getX();
             y1 = mouseEvent.getY();
+            try {
+                chatClient.serverInterface.sendDrawing(x1, y1, mouseEvent.getX(), mouseEvent.getY());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         } else if (btnClear.isSelected()) {
             gc.setFill(Color.WHITE);
             gc.fillOval(mouseEvent.getX(),mouseEvent.getY(),10, 10 );
+            try {
+                chatClient.serverInterface.sendDrawing(x1, y1, mouseEvent.getX(), mouseEvent.getY());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
         updateCoord(mouseEvent.getX(), mouseEvent.getY());
     }
@@ -349,8 +387,28 @@ public class ClientPaneFX extends Application {
         updateCoord(mouseEvent.getX(), mouseEvent.getY());
     }
 
-    public static void main (String[]args){
-        launch(args);
+    private void sendMessage(KeyEvent keyEvent){
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            try {
+                chatClient.serverInterface.updateChat(name, chatField.getText());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            chatField.clear();
+        }
     }
+
+    private void getConnected(String userName) throws RemoteException{
+        //remove whitespace and non word characters to avoid malformed url
+        String cleanedUserName = userName.replaceAll("\\W+","_");
+        try {
+            chatClient = new Client(this, cleanedUserName);
+            chatClient.startClient();
+        } catch (RemoteException e) {
+            //e.printStackTrace();
+            e.getMessage();
+        }
+    }
+
 
 }

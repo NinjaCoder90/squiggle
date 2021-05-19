@@ -3,9 +3,7 @@ package Server;
 import Shared.ClientInterface;
 import Shared.ServerInterface;
 import Shared.Users;
-import javafx.scene.canvas.GraphicsContext;
 
-import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -16,7 +14,8 @@ import java.util.Date;
 import java.util.Vector;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
-    private final String line = "--------------------------------------\n";
+
+    private final String line = "<<---------------------------------------->>\n";
     private static final long serialVersionUID = 1L;
     private final Vector<Users> usersList;
 
@@ -34,10 +33,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             hostName = args[0];
             serviceName = args[1];
         }
+
         try {
             ServerInterface hello = new Server();
             Naming.rebind("rmi://" + hostName + "/" + serviceName, hello);
             System.out.println("RMI Server is running...");
+
         }catch (Exception e){
             System.out.println("Server had problems starting");
         }
@@ -51,15 +52,34 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             e.printStackTrace();
         }
     }
-    @Override
-    public void sendDrawing(Double x1, Double y1, double x, double y) throws RemoteException {
-        sendDrawingToEverybody(x1,y1,x,y);
-    }
 
-    private void sendDrawingToEverybody(Double x1, Double y1, double x, double y){
+    @Override
+    public void sendDrawing(Double x1, Double y1, double x, double y, String color) throws RemoteException {
         for (Users user : usersList) {
             try {
-                user.getClient().drawingFromServer(x1, y1, x, y);
+                user.getClient().drawingFromServer(x1, y1, x, y, color);
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void sendClear(double x, double y, int n, int m, String color) throws RemoteException {
+        for (Users user : usersList) {
+            try {
+                user.getClient().clearFromServer(x, y, n, m, color);
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void sendClearCanvas(int v, int v1, int v2, int v3, String color) throws RemoteException {
+        for (Users user : usersList) {
+            try {
+                user.getClient().clearFromServer(v, v1, v2, v3, color);
             }catch (RemoteException e){
                 e.printStackTrace();
             }
@@ -91,18 +111,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         try{
             ClientInterface nextClient = ( ClientInterface )Naming.lookup("rmi://" + details[1] + "/" + details[2]);
-
             usersList.addElement(new Users(details[0], nextClient));
-
             nextClient.messageFromServer("[Server] : Hello " + details[0] + " you are now free to chat.\n");
-
             sendMessageToEverybody("[Server] : " + details[0] + " has joined the group.\n");
-
             updateUserList();
         }
         catch(RemoteException | MalformedURLException | NotBoundException e){
-            //e.printStackTrace();
-            e.getCause();
+            e.printStackTrace();
         }
     }
 
@@ -150,7 +165,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             e.printStackTrace();
         }
     }
-
 
 }
 

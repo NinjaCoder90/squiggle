@@ -1,12 +1,9 @@
-package Client;
+package GUI;
 
-import GUI.ClientPaneFX;
 import Shared.ClientInterface;
 import Shared.ServerInterface;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 import java.rmi.ConnectException;
 import java.rmi.Naming;
@@ -28,11 +25,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         super();
         this.chatGUI = chatGUI;
         this.name = userName;
-        this.clientServiceName = "ClientListenService_" + userName;
+        this.clientServiceName = "ClientService_" + userName;
     }
 
 
-    public void startClient() throws RemoteException{
+    public void startClient() throws RemoteException {
         String hostName = "localhost";
         String[] details = {name, hostName, clientServiceName};
 
@@ -41,14 +38,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             String serviceName = "distributedService";
             serverInterface = (ServerInterface) Naming.lookup("rmi://" + hostName + "/" + serviceName);
         }
-        catch (ConnectException e) {
+        catch (ConnectException | NotBoundException | MalformedURLException e) {
             //Alert alert = new Alert(Alert.AlertType.ERROR, "The server seems to be unavailable\nPlease try later", ButtonType.OK);
             //alert.show();
             connectionProblem = true;
             e.printStackTrace();
-        }catch(NotBoundException | MalformedURLException me){
-            connectionProblem = true;
-            me.printStackTrace();
         }
         if(!connectionProblem){
             registerWithServer(details);
@@ -60,29 +54,37 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         try{
             serverInterface.passIDentity(this.ref);
             serverInterface.registerUsers(details);
-        }
-        catch(Exception e){
-            //e.printStackTrace();
+        }catch(Exception e){
             e.getCause();
         }
     }
 
     @Override
     public void messageFromServer(String message) throws RemoteException {
-       //System.out.println(message);
         chatGUI.chatSection.appendText(message);
     }
 
     @Override
-    public void drawingFromServer(Double x1, Double y1, double x, double y) throws RemoteException {
+    public void drawingFromServer(Double x1, Double y1, double x, double y, String color) throws RemoteException {
         chatGUI.gc.strokeLine(x1,y1,x,y);
-        chatGUI.gc.setFill(Color.BLACK);
+        chatGUI.gc.setStroke(Color.valueOf(color));
+    }
+
+    @Override
+    public void clearFromServer(double x, double y, int n, int m, String color) throws RemoteException {
+        chatGUI.gc.fillOval(x,y,n,m);
+        chatGUI.gc.setFill(Color.valueOf(color));
+    }
+
+    @Override
+    public void ClearCanvasFromServer(int v, int v1, int v2, int v3, String color) throws RemoteException {
+        chatGUI.gc.fillRect(v,v1,v2,v3);
+        chatGUI.gc.setFill(Color.valueOf(color));
     }
 
     @Override
     public void updateUserList(String[] currentUsers) throws RemoteException {
-        for (String user : currentUsers) {
-            chatGUI.users.appendText(user);
-        }
+            chatGUI.setClientPanel(currentUsers);
     }
+
 }

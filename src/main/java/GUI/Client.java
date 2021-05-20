@@ -2,6 +2,9 @@ package GUI;
 
 import Shared.ClientInterface;
 import Shared.ServerInterface;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.paint.Color;
 
 import java.net.MalformedURLException;
@@ -10,11 +13,15 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
 
     private static final long serialVersionUID = 7468891722773409712L;
-    ClientPaneFX chatGUI;
+    ClientPaneFX chatGUI ;
     private final String clientServiceName;
     private final String name;
     public ServerInterface serverInterface;
@@ -39,8 +46,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             serverInterface = (ServerInterface) Naming.lookup("rmi://" + hostName + "/" + serviceName);
         }
         catch (ConnectException | NotBoundException | MalformedURLException e) {
-            //Alert alert = new Alert(Alert.AlertType.ERROR, "The server seems to be unavailable\nPlease try later", ButtonType.OK);
-            //alert.show();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "The server seems to be unavailable\nPlease try later", ButtonType.OK);
+            alert.show();
             connectionProblem = true;
             e.printStackTrace();
         }
@@ -55,13 +62,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             serverInterface.passIDentity(this.ref);
             serverInterface.registerUsers(details);
         }catch(Exception e){
-            e.getCause();
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void messageFromServer(String message) throws RemoteException {
-        chatGUI.chatSection.appendText(message);
+    public void messageFromServer(String username,String message) throws RemoteException {
+            chatGUI.chatSection.appendText(username + message);
     }
 
     @Override
@@ -83,8 +90,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     @Override
-    public void updateUserList(String[] currentUsers) throws RemoteException {
-            chatGUI.setClientPanel(currentUsers);
+    public void updateUserListFromServer(String[] currentUsers) throws RemoteException {
+        chatGUI.users.clear();
+        chatGUI.users.setText("Leaderboard\n");
+       for (String user : currentUsers){
+           chatGUI.users.appendText(user + "\n");
+       }
     }
-
 }

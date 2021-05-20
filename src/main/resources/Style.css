@@ -1,0 +1,4 @@
+
+.text-area .scroll-bar:vertical:disabled {
+    -fx-opacity: 0;
+}

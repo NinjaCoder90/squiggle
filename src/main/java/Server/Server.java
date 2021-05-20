@@ -17,9 +17,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private final String line = "<<---------------------------------------->>\n";
     private static final long serialVersionUID = 1L;
-    private final Vector<Users> usersList;
+    public final Vector<Users> usersList;
 
-    protected Server() throws RemoteException {
+    public Server() throws RemoteException {
         super();
         usersList = new Vector<>(10,1);
     }
@@ -86,15 +86,36 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    @Override
-    public void updateChat(String userName, String chatMessage) throws RemoteException {
-        sendMessageToEverybody(userName + " : " + chatMessage + "\n");
+    public void updateUserList() {
+        String[] currentUsers = getUserList();
+        for(Users user : usersList){
+            try {
+                user.getClient().updateUserListFromServer(currentUsers);
+            }
+            catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    private void sendMessageToEverybody(String newMessage) {
+    private String[] getUserList() {
+        // generate an array of current users
+        String[] allUsers = new String[usersList.size()];
+        for(int i = 0; i < allUsers.length; i++){
+            allUsers[i] = usersList.elementAt(i).getName();
+        }
+        return allUsers;
+    }
+
+    @Override
+    public void updateChat(String userName, String chatMessage) throws RemoteException {
+        sendMessageToEverybody(userName , " : " + chatMessage + "\n");
+    }
+
+    private void sendMessageToEverybody(String username, String newMessage) {
         for (Users user : usersList) {
             try {
-                user.getClient().messageFromServer(newMessage);
+                user.getClient().messageFromServer(username,newMessage);
             }catch (RemoteException e){
                 e.printStackTrace();
             }
@@ -112,8 +133,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         try{
             ClientInterface nextClient = ( ClientInterface )Naming.lookup("rmi://" + details[1] + "/" + details[2]);
             usersList.addElement(new Users(details[0], nextClient));
-            nextClient.messageFromServer("[Server] : Hello " + details[0] + " you are now free to chat.\n");
-            sendMessageToEverybody("[Server] : " + details[0] + " has joined the group.\n");
             updateUserList();
         }
         catch(RemoteException | MalformedURLException | NotBoundException e){
@@ -125,36 +144,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public void leaveChat(String userName) throws RemoteException {
         for(Users c : usersList){
             if(c.getName().equals(userName)){
-                System.out.println(line + userName + " left the chat session");
+                System.out.println(line + userName + " left the chat session" + "\n" + line);
                 System.out.println(new Date(System.currentTimeMillis()));
                 usersList.remove(c);
+                updateUserList();
                 break;
             }
         }
-        if(!usersList.isEmpty()){
-            updateUserList();
-        }
-    }
-
-    private void updateUserList() {
-        String[] currentUsers = getUserList();
-        for(Users c : usersList){
-            try {
-                c.getClient().updateUserList(currentUsers);
-            }
-            catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private String[] getUserList() {
-        // generate an array of current users
-        String[] allUsers = new String[usersList.size()];
-        for(int i = 0; i < allUsers.length; i++){
-            allUsers[i] = usersList.elementAt(i).getName();
-        }
-        return allUsers;
     }
 
     @Override

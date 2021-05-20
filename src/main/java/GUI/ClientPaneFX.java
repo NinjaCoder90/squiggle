@@ -1,5 +1,6 @@
 package GUI;
 
+import Server.Server;
 import Shared.Users;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -30,9 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ClientPaneFX extends Application {
 
@@ -42,12 +41,13 @@ public class ClientPaneFX extends Application {
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
     private ToggleButton btnDraw,btnClear;
     protected String color = "black";
-    private String name;
+    protected String name;
     private Double x1 = null, y1 = null;
-    private Client chatClient;
+    private Client client;
     private Stage primaryStage;
     private Button btnColorRed,btnColorBlack,btnColorGreen,btnColorPurple,btnColorPink,btnColorOrange,btnColorBlue;
-    protected TextArea chatSection, users;
+    protected TextArea chatSection = new TextArea();
+    protected TextArea users = new TextArea();
     private final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     private TextField userName;
@@ -59,6 +59,7 @@ public class ClientPaneFX extends Application {
         this.primaryStage = primaryStage;
 
         labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 14; -fx-text-fill: #242c37;");
+        labelSystemInfo.getStyleClass().add("");
 
         ImageView scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
         scrawlLogoView.setStyle("-fx-fit-to-width: 300;-fx-fit-to-height: 355");
@@ -86,6 +87,7 @@ public class ClientPaneFX extends Application {
         startSection.getChildren().addAll(scrawlLogoView,howToPlay,userName,start,labelSystemInfo);
         startSection.setStyle("-fx-spacing: 10; -fx-pref-height: 700;-fx-pref-width: 1350; -fx-alignment: center");
         Scene scene = new Scene(startSection);
+        scene.getStylesheets().add("Style.css");
 
         onCloseStageEvent();
         primaryStage.getIcons().add(new Image(new File("src/main/resources/favicon.png").toURI().toString()));//ICON from FlatIcon By Freepik
@@ -97,9 +99,10 @@ public class ClientPaneFX extends Application {
 
     private void onCloseStageEvent(){
         primaryStage.setOnCloseRequest(e -> {
-            if(chatClient != null){
+            if(client != null){
                 try {
-                    chatClient.serverInterface.leaveChat(name);
+                    client.serverInterface.leaveChat(name);
+
                 } catch (RemoteException exception) {
                     exception.printStackTrace();
                 }
@@ -114,7 +117,7 @@ public class ClientPaneFX extends Application {
             name = userName.getText();
             getConnected(name);
         } catch (RemoteException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
 
         labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 12; -fx-text-fill: #242c37;");
@@ -123,20 +126,17 @@ public class ClientPaneFX extends Application {
         wordToGuess.setText(showWordToGuess());
         wordToGuess.setStyle("-fx-pref-height: 25;-fx-text-fill: #242c37;-fx-font-weight: bold; -fx-font-size: 18; -fx-font-family: 'JetBrains Mono Medium';");
 
-        users = new TextArea();
-        users.setText("Leaderboard\n");
         users.setStyle("-fx-alignment: center;-fx-max-width: 250; -fx-pref-height: 290;-fx-background-color: #242c37;-fx-control-inner-background: #242c37;-fx-font-weight: bold; " +
                         "-fx-text-fill: #fff;-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';" +
                         "-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;-fx-text-box-border: transparent;-fx-faint-focus-color: transparent;" +
                         "-fx-focus-color: transparent;-fx-padding: 10");
         users.setEditable(false);
 
-        chatSection = new TextArea();
         chatSection.setStyle("-fx-pref-height: 540;-fx-pref-width: 280;-fx-background-color: #151a21; -fx-control-inner-background: #151a21;-fx-text-box-border: transparent; -fx-text-fill: #fff;" +
-                "-fx-faint-focus-color: transparent;-fx-focus-color: transparent;" +
-                "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-padding: 10;");
+                        "-fx-faint-focus-color: transparent;-fx-focus-color: transparent;" +
+                        "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-padding: 10;");
         chatSection.setEditable(false);
-
+        chatSection.setWrapText(true);
 
         chatField.setStyle("-fx-pref-height: 40;-fx-background-color: #242c37; -fx-text-fill: #ffff;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
         chatField.setMaxWidth(240);
@@ -271,7 +271,13 @@ public class ClientPaneFX extends Application {
         rootPane.setRight(marginRightPane);
 
         Scene secondStage = new Scene(rootPane);
+        secondStage.getStylesheets().add("Style.css");
+
         primaryStage.setScene(secondStage);
+
+        ScrollBar scrollBar = (ScrollBar) chatSection.lookup(".scroll-bar:vertical");
+        scrollBar.setDisable(true);
+
     }
 
 
@@ -299,7 +305,7 @@ public class ClientPaneFX extends Application {
        try {
            gc.setFill(Color.WHITE);
            gc.fillRect(0, 0, 695, 625);
-           chatClient.serverInterface.sendClearCanvas(0,0,695,625,"white");
+           client.serverInterface.sendClearCanvas(0,0,695,625,"white");
        }catch(RemoteException e){
            e.printStackTrace();
        }
@@ -315,12 +321,12 @@ public class ClientPaneFX extends Application {
             if (btnDraw.isSelected()) {
                 gc.setStroke(Color.valueOf(color));
                 gc.strokeLine(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY());
-                chatClient.serverInterface.sendDrawing(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY(), color);
+                client.serverInterface.sendDrawing(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getX(), mouseEvent.getY(), color);
 
             } else if (btnClear.isSelected()) {
                 gc.setFill(Color.WHITE);
                 gc.fillOval(mouseEvent.getX(), mouseEvent.getY(), 10, 10);
-                chatClient.serverInterface.sendClear(mouseEvent.getX(), mouseEvent.getY(), 10, 10, "white");
+                client.serverInterface.sendClear(mouseEvent.getX(), mouseEvent.getY(), 10, 10, "white");
             }
         }catch (RemoteException e){
             e.printStackTrace();
@@ -364,12 +370,12 @@ public class ClientPaneFX extends Application {
             gc.strokeLine(x1, y1, mouseEvent.getX(), mouseEvent.getY());
             x1 = mouseEvent.getX();
             y1 = mouseEvent.getY();
-            chatClient.serverInterface.sendDrawing(x1, y1, mouseEvent.getX(), mouseEvent.getY(), color);
+               client.serverInterface.sendDrawing(x1, y1, mouseEvent.getX(), mouseEvent.getY(), color);
 
             } else if (btnClear.isSelected()) {
             gc.setFill(Color.WHITE);
             gc.fillOval(mouseEvent.getX(),mouseEvent.getY(),10, 10 );
-            chatClient.serverInterface.sendClear(mouseEvent.getX(), mouseEvent.getY(), 10, 10, "white");
+               client.serverInterface.sendClear(mouseEvent.getX(), mouseEvent.getY(), 10, 10, "white");
             }
        }catch (RemoteException e){
            e.printStackTrace();
@@ -379,7 +385,7 @@ public class ClientPaneFX extends Application {
     private void sendMessage(KeyEvent keyEvent){
         if (keyEvent.getCode() == KeyCode.ENTER){
             try {
-                chatClient.serverInterface.updateChat(name, chatField.getText());
+                client.serverInterface.updateChat(name, chatField.getText());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -388,22 +394,12 @@ public class ClientPaneFX extends Application {
     }
 
     private void getConnected(String userName) throws RemoteException{
-        /*
-         *remove whitespace and non word characters to avoid malformed url
-        */
-        String cleanedUserName = userName.replaceAll("\\W+","_");
         try {
-            chatClient = new Client(this, cleanedUserName);
-            chatClient.startClient();
+            //remove whitespace and non word characters to avoid malformed url
+            client = new Client(this, userName.replaceAll("\\W+","_"));
+            client.startClient();
         } catch (RemoteException e) {
-            e.getMessage();
-        }
-    }
-
-
-    public void setClientPanel(String[] currClients) {
-        for (String user : currClients){
-            users.appendText(user);
+            e.printStackTrace();
         }
     }
 

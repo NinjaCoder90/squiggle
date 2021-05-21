@@ -1,11 +1,11 @@
-package GUI;
+package Application;
 
-import Server.Server;
-import Shared.Users;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.stage.Stage;
@@ -58,34 +59,29 @@ public class ClientPaneFX extends Application {
 
         this.primaryStage = primaryStage;
 
-        labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 14; -fx-text-fill: #242c37;");
-        labelSystemInfo.getStyleClass().add("");
+        labelSystemInfo.getStyleClass().add("system-info");
 
         ImageView scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
-        scrawlLogoView.setStyle("-fx-fit-to-width: 300;-fx-fit-to-height: 355");
+        scrawlLogoView.getStyleClass().add("logo-View");
         scrawlLogoView.setPreserveRatio(true);
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "",ButtonType.OK);
         Hyperlink howToPlay = new Hyperlink("How to Play");
-        howToPlay.setStyle("-fx-font-size: 18;");
+        howToPlay.getStyleClass().add("link-howToPlay");
         howToPlay.setOnMouseClicked(e ->  alert.show());
 
         userName = new TextField();
-        userName.setStyle("-fx-max-width: 330;-fx-pref-height: 35;-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;");
         userName.setPromptText("Enter your name");
+        userName.getStyleClass().add("username-textField");
 
         Button start = new Button("PLAY!");
-        start.setStyle("-fx-background-color: #5cb85c; -fx-font-weight: bold; -fx-pref-width: 330; -fx-text-fill: #fff; -fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';" +
-                        "-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;");
-        start.setOnMouseEntered(e -> start.setStyle("-fx-background-color: #449D44; -fx-font-weight: bold; -fx-text-fill: #fff;-fx-pref-width: 330; " +
-                        "-fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;"));
-        start.setOnMouseExited(e -> start.setStyle("-fx-background-color: #5cb85c;-fx-font-weight: bold; -fx-text-fill: #fff;-fx-pref-width: 330;" +
-                         " -fx-pref-height: 40; -fx-font-size: 16;-fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 6 6 6 6; -fx-background-radius: 6 6 6 6;"));
+        start.getStyleClass().add("btn-start");
         start.setOnMouseClicked(this::secondStage);
 
         VBox startSection = new VBox();
         startSection.getChildren().addAll(scrawlLogoView,howToPlay,userName,start,labelSystemInfo);
-        startSection.setStyle("-fx-spacing: 10; -fx-pref-height: 700;-fx-pref-width: 1350; -fx-alignment: center");
+        startSection.getStyleClass().add("startSection");
+
         Scene scene = new Scene(startSection);
         scene.getStylesheets().add("Style.css");
 
@@ -120,42 +116,36 @@ public class ClientPaneFX extends Application {
             e.printStackTrace();
         }
 
-        labelSystemInfo.setStyle("-fx-font-family: 'JetBrains Mono NL'; -fx-font-size: 12; -fx-text-fill: #242c37;");
-
         wordToGuess = new Label();
         wordToGuess.setText(showWordToGuess());
-        wordToGuess.setStyle("-fx-pref-height: 25;-fx-text-fill: #242c37;-fx-font-weight: bold; -fx-font-size: 18; -fx-font-family: 'JetBrains Mono Medium';");
+        wordToGuess.getStyleClass().add("wordToGuess-label");
 
-        users.setStyle("-fx-alignment: center;-fx-max-width: 250; -fx-pref-height: 290;-fx-background-color: #242c37;-fx-control-inner-background: #242c37;-fx-font-weight: bold; " +
-                        "-fx-text-fill: #fff;-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';" +
-                        "-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;-fx-text-box-border: transparent;-fx-faint-focus-color: transparent;" +
-                        "-fx-focus-color: transparent;-fx-padding: 10");
+        users.getStyleClass().add("users-textarea");
         users.setEditable(false);
 
-        chatSection.setStyle("-fx-pref-height: 540;-fx-pref-width: 280;-fx-background-color: #151a21; -fx-control-inner-background: #151a21;-fx-text-box-border: transparent; -fx-text-fill: #fff;" +
-                        "-fx-faint-focus-color: transparent;-fx-focus-color: transparent;" +
-                        "-fx-font-size: 14; -fx-font-family: 'JetBrains Mono Medium';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8; -fx-padding: 10;");
+        chatSection.getStyleClass().add("chatSection-textarea");
         chatSection.setEditable(false);
         chatSection.setWrapText(true);
 
-        chatField.setStyle("-fx-pref-height: 40;-fx-background-color: #242c37; -fx-text-fill: #ffff;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        chatField.getStyleClass().add("chatField-textField");
         chatField.setMaxWidth(240);
         chatField.setPromptText("Type your guess here...");
         chatField.setOnKeyPressed(this::sendMessage);
 
         VBox rightPane = new VBox();
-        rightPane.setStyle("-fx-pref-height: 620;-fx-alignment: center;-fx-background-color: #171A1A;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        rightPane.getStyleClass().add("rightPane-style");
         rightPane.getChildren().addAll(chatSection,chatField);
+
         HBox marginRightPane = new HBox();
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(40, 20, 30, 30));
 
         VBox marginCanvas = new VBox();
         marginCanvas.getChildren().addAll(wordToGuess,canvas,labelSystemInfo);
-        marginCanvas.setStyle("-fx-alignment: center;-fx-spacing: 7;");
+        marginCanvas.getStyleClass().add("marginCanvas-style");
 
         VBox leftPane = new VBox();
-        leftPane.setStyle("-fx-background-color: #151a21;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
+        leftPane.getStyleClass().add("leftPane-style");
         leftPane.setAlignment(Pos.CENTER);
 
         HBox marginLeftPane = new HBox();
@@ -164,86 +154,77 @@ public class ClientPaneFX extends Application {
 
         final ToggleGroup options = new ToggleGroup();
 
-        ImageView imageview = new ImageView(new Image(new File("src/main/resources/eraser.png").toURI().toString()));
-        imageview.setFitHeight(30);
-        imageview.setFitWidth(30);
+        ImageView viewEraseImage = new ImageView(new Image("eraser.png"));
+        viewEraseImage.setFitHeight(25);
+        viewEraseImage.setPreserveRatio(true);
         btnClear = new ToggleButton();
-        btnClear.setGraphic(imageview);
-        btnClear.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
-        btnClear.setOnMouseEntered(e -> btnClear.setStyle("-fx-background-color: #3c4458;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
-        btnClear.setOnMouseExited(e -> btnClear.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        btnClear.setPrefSize(25, 25);
+        btnClear.setGraphic(viewEraseImage);
+        btnClear.getStyleClass().add("btnClear");
         btnClear.setToggleGroup(options);
         btnClear.setTooltip(new Tooltip("ERASER \nErase part of the picture\nand replace it with the background color."));
 
-        ImageView imageviewDraw = new ImageView(new Image(new File("src/main/resources/pencil_64px.png").toURI().toString()));
-        imageviewDraw.setFitHeight(30);
-        imageviewDraw.setFitWidth(30);
+        ImageView viewDrawImage = new ImageView(new Image("favicon.png"));
+        viewDrawImage.setFitHeight(25);
+        viewDrawImage.setPreserveRatio(true);
         btnDraw = new ToggleButton();
-        btnDraw.setGraphic(imageviewDraw);
-        btnDraw.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
-        btnDraw.setOnMouseEntered(e -> btnDraw.setStyle("-fx-background-color: #3c4458;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
-        btnDraw.setOnMouseExited(e -> btnDraw.setStyle("-fx-background-color: #242c37;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        btnDraw.setPrefSize(25, 25);
+        btnDraw.setGraphic(viewDrawImage);
+        btnDraw.getStyleClass().add("btnClear");
         btnDraw.setToggleGroup(options);
         btnDraw.setTooltip(new Tooltip("PENCIL\nDraw a free form line with the\nselected color."));
 
         HBox utilitiesBtnSection = new HBox();
-        utilitiesBtnSection.setStyle("-fx-alignment: center;-fx-spacing: 20");
+        utilitiesBtnSection.getStyleClass().add("utility-btnSection");
         utilitiesBtnSection.getChildren().addAll(btnDraw,btnClear);
 
         HBox colorSection1 = new HBox();
+        colorSection1.getStyleClass().add("colorSection1-style");
 
         btnColorRed = new Button();
-        btnColorRed.setStyle("-fx-background-color: #d00000;-fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorRed.getStyleClass().add("btn-Red");
         btnColorRed.setOnAction(this::processColorChange);
 
         btnColorBlack = new Button();
-        btnColorBlack.setStyle("-fx-background-color: #000000;-fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorBlack.getStyleClass().add("btn-Black");
         btnColorBlack.setOnAction(this::processColorChange);
 
         btnColorBlue = new Button();
-        btnColorBlue.setStyle("-fx-background-color: #1440ee;-fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorBlue.getStyleClass().add("btn-Blue");
         btnColorBlue.setOnAction(this::processColorChange);
 
         btnColorPink = new Button();
-        btnColorPink.setStyle("-fx-background-color: #af09bd;-fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorPink.getStyleClass().add("btn-Pink");
         btnColorPink.setOnAction(this::processColorChange);
 
-        colorSection1.setStyle("-fx-spacing: 10;-fx-alignment: center");
         colorSection1.getChildren().addAll(btnColorRed, btnColorBlack, btnColorBlue,btnColorPink);
 
         HBox colorSection2 = new HBox();
+        colorSection2.getStyleClass().add("colorSection1-style");
 
         Button btnColorYellow = new Button();
-        btnColorYellow.setStyle("-fx-background-color: #f6ff00; -fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorYellow.getStyleClass().add("btn-Yellow");
         btnColorYellow.setOnAction(this::processColorChange);
 
         btnColorOrange = new Button();
-        btnColorOrange.setStyle("-fx-background-color: #ff9b42; -fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorOrange.setStyle("");
+        btnColorOrange.getStyleClass().add("btn-Orange");
         btnColorOrange.setOnAction(this::processColorChange);
 
         btnColorGreen = new Button();
-        btnColorGreen.setStyle("-fx-background-color: #057955;-fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorGreen.getStyleClass().add("btn-Green");
         btnColorGreen.setOnAction(this::processColorChange);
 
         btnColorPurple = new Button();
-        btnColorPurple.setStyle("-fx-background-color: #460fe7;-fx-pref-height: 30; -fx-pref-width: 30");
+        btnColorPurple.getStyleClass().add("btn-Purple");
         btnColorPurple.setOnAction(this::processColorChange);
 
-        colorSection2.setStyle("-fx-spacing: 10;-fx-alignment: center");
         colorSection2.getChildren().addAll(btnColorYellow,btnColorOrange,btnColorGreen,btnColorPurple);
 
         Button clearCanvas = new Button("CLEAR CANVAS");
         clearCanvas.setPadding(new Insets(8, 8, 8, 8));
-        clearCanvas.setStyle("-fx-background-color: #242c37;-fx-font-weight: bold; -fx-text-fill: #fff;-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;");
-        clearCanvas.setOnMouseEntered(e -> clearCanvas.setStyle("-fx-background-color: #3c4458;-fx-font-weight: bold; -fx-text-fill: #fff; -fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
-        clearCanvas.setOnMouseExited(e -> clearCanvas.setStyle("-fx-background-color: #242c37;-fx-font-weight: bold; -fx-text-fill: #fff; -fx-font-family: 'JetBrains Mono NL';-fx-border-radius: 8 8 8 8; -fx-background-radius: 8 8 8 8;"));
+        clearCanvas.getStyleClass().add("btn-ClearCanvas");
         clearCanvas.setOnMouseClicked(this::clearCanvas);
-
-        Label curColor = new Label("COLOR: BLACK");
-        curColor.setStyle("-fx-text-fill: #ffff;");
-
-        Label coord = new Label("(x, y)");
-        coord.setStyle("-fx-text-fill: #ffff; -fx-min-width: 87");
 
         leftPane.getChildren().addAll(users,utilitiesBtnSection,colorSection1,colorSection2,clearCanvas);
         leftPane.setPrefWidth(280);

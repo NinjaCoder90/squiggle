@@ -109,13 +109,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     @Override
     public void updateChat(String userName, String chatMessage) throws RemoteException {
-        sendMessageToEverybody(userName , " : " + chatMessage + "\n");
+        sendMessageToEverybody(userName + ": " + chatMessage);
     }
 
-    private void sendMessageToEverybody(String username, String newMessage) {
+    private void sendMessageToEverybody(String newMessage) {
         for (Users user : usersList) {
             try {
-                user.getClient().messageFromServer(username,newMessage);
+                user.getClient().messageFromServer(newMessage);
             }catch (RemoteException e){
                 e.printStackTrace();
             }

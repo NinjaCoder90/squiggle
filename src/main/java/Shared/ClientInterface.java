@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote {
 
-    public void messageFromServer(String username,String message) throws RemoteException;
+    public void messageFromServer(String message) throws RemoteException;
 
     public void drawingFromServer(Double x1, Double y1, double x, double y ,String color) throws RemoteException;
 

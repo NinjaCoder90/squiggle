@@ -1,4 +1,4 @@
-package GUI;
+package Application;
 
 public class ClientMainFX {
 }

@@ -1,10 +1,9 @@
-package GUI;
+package Application;
 
 import Shared.ClientInterface;
 import Shared.ServerInterface;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.paint.Color;
 
 import java.net.MalformedURLException;
@@ -13,10 +12,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
 
@@ -67,8 +62,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     @Override
-    public void messageFromServer(String username,String message) throws RemoteException {
-            chatGUI.chatSection.appendText(username + message);
+    public void messageFromServer(String message) throws RemoteException {
+            chatGUI.chatSection.appendText(message);
     }
 
     @Override

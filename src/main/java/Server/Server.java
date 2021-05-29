@@ -1,11 +1,10 @@
 package Server;
 
-import Application.Client;
+import Application.ClientPaneFX;
 import Shared.ClientInterface;
 import Shared.ServerInterface;
 import Shared.Users;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.application.Platform;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -13,24 +12,22 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Vector;
+import java.util.*;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
+    public static int round = 1;
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
-    public final Vector<Users> usersList;
+    public static final Vector<Users> usersList = new Vector<>(10,1);;
     String[] detail;
 
     public Server() throws RemoteException {
         super();
-        usersList = new Vector<>(10,1);
     }
 
     public static void main(String[] args) {
+
         startRMIRegistry();
         String hostName = "localhost";
         String serviceName = "distributedService";
@@ -90,8 +87,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    @Override
-    public void sendRound(int round) throws RemoteException{
+
+    public static void sendRound(int round){
         for (Users user : usersList) {
             try {
                 user.getClient().sendRoundFromServer(round);
@@ -100,6 +97,40 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             }
         }
     }
+
+    @Override
+    public void updateRound(){
+        for (Users user : usersList) {
+            try {
+                user.getClient().updateRoundFromServer(round);
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setTimerGame() throws RemoteException {
+
+        Timer timerGameSession = new Timer();
+        timerGameSession.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                if (round == 4) {
+                    //chooseWinner();
+                    timerGameSession.cancel();
+                    timerGameSession.purge();
+                    round = 1;
+                    return;
+                }
+                sendRound(round);
+                //pickPlayerToDraw();
+                round++;
+            }
+        }, 2 * 10 * 1000,2 * 10 * 1000);
+    }
+
 
     @Override
     public void sendClearCanvas(int v, int v1, int v2, int v3, String color) throws RemoteException {

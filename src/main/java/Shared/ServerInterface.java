@@ -24,8 +24,12 @@ public interface ServerInterface extends Remote {
 
     public boolean checkIfUsernameExist(String username) throws RemoteException;
 
-    public void sendRound(int round) throws RemoteException;
+    //public void sendRound() throws RemoteException;
 
     public int returnCurrentUsers() throws RemoteException;
+
+    public void updateRound() throws RemoteException;
+
+    public void setTimerGame() throws RemoteException;
 
 }

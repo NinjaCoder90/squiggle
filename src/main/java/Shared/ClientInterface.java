@@ -19,4 +19,6 @@ public interface ClientInterface extends Remote {
 
     public void sendRoundFromServer(int round) throws RemoteException;
 
+    public void updateRoundFromServer(int round) throws RemoteException;
+
 }

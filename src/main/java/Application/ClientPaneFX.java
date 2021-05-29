@@ -44,7 +44,7 @@ public class ClientPaneFX extends Application {
 
     private static final long serialVersionUID = 1L;
     private Label wordToGuess;
-    protected final Label roundsLabel = new Label();
+    public Label roundsLabel = new Label();
     public final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
     public ToggleButton btnDraw = new ToggleButton();
@@ -67,6 +67,7 @@ public class ClientPaneFX extends Application {
     private final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     private TextField userName;
+    public int rnd;
 
 
     @Override
@@ -120,10 +121,7 @@ public class ClientPaneFX extends Application {
         scene.getStylesheets().add("Style.css");
 
         onCloseStageEvent();
-        primaryStage.getIcons()
-                .add(new Image(new File("src/main/resources/favicon.png")
-                        .toURI()
-                        .toString()));//ICON from FlatIcon By Freepik
+        primaryStage.getIcons().add(new Image(new File("src/main/resources/favicon.png").toURI().toString()));//ICON from FlatIcon By Freepik
         primaryStage.setTitle("Scrawl Game");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -168,9 +166,6 @@ public class ClientPaneFX extends Application {
         HBox marginRightPane = new HBox();
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
-
-        //roundsLabel.setText("Round 0 of 3");
-        roundsLabel.getStyleClass().add("roundsLabel-style");
 
         VBox marginCanvas = new VBox();
         marginCanvas.getChildren().addAll(wordToGuess,canvas);
@@ -289,10 +284,20 @@ public class ClientPaneFX extends Application {
 
         try {
             getConnected();
-            //setTimerGame();
+            if (client.serverInterface.returnCurrentUsers() == 1) {
+                client.serverInterface.setTimerGame();
+            }
+            client.serverInterface.updateRound();
+            if (client.serverInterface.returnCurrentUsers() > 1) {
+                roundsLabel.setText("Round " + (rnd-1) + " of 3");
+            }else {
+                roundsLabel.setText("Round " + rnd + " of 3");
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+        roundsLabel.getStyleClass().add("roundsLabel-style");
 
         Scene secondStage = new Scene(rootPane);
         secondStage.getStylesheets().add("Style.css");
@@ -319,32 +324,6 @@ public class ClientPaneFX extends Application {
      *   chooseWinner();
      *   showScenePlayAgain();
      */
- /*   private void setTimerGame() throws RemoteException {
-        //if (client.serverInterface.returnCurrentUsers() == 1) {
-            roundsLabel.setText("Round 1 of 3");
-            Timer timerGameSession = new Timer();
-            timerGameSession.schedule(new TimerTask() {
-                int round = 1;
-
-                @Override
-                public void run() {
-                    if (round == 3) {
-                        //chooseWinner();
-                        timerGameSession.cancel();
-                        timerGameSession.purge();
-                        return;
-                    }
-                    Platform.runLater(() -> roundsLabel.setText("Round " + round + " of 3"));
-                    *//*sendRoundToServer(round);*//*
-                    //pickPlayerToDraw();
-                    round++;
-                }
-            }, 1 * 30 * 1000, 1 * 30 * 1000);
-       // }
-
-    }*/
-
-
 
     private void validateGuess() {
 

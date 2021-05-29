@@ -10,7 +10,7 @@ public interface ServerInterface extends Remote {
 
     public void registerUsers(String[] details) throws RemoteException;
 
-    public void leaveChat(String userName) throws RemoteException;
+    public void leaveGame(String userName) throws RemoteException;
 
     public void passIDentity(RemoteRef ref) throws RemoteException;
 
@@ -19,5 +19,13 @@ public interface ServerInterface extends Remote {
     public void sendClear(double x,double y, int n, int m, String color) throws RemoteException;
 
     public void sendClearCanvas(int v,int v1, int v2, int v3, String color) throws RemoteException;
+
+    public void enableDrawing(String clientPaneFX) throws RemoteException;
+
+    public boolean checkIfUsernameExist(String username) throws RemoteException;
+
+    public void sendRound(int round) throws RemoteException;
+
+    public int returnCurrentUsers() throws RemoteException;
 
 }

@@ -1,8 +1,11 @@
 package Server;
 
+import Application.Client;
 import Shared.ClientInterface;
 import Shared.ServerInterface;
 import Shared.Users;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -10,14 +13,17 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Vector;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
-    private final String line = "<<---------------------------------------->>\n";
+    private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
     public final Vector<Users> usersList;
+    String[] detail;
 
     public Server() throws RemoteException {
         super();
@@ -54,6 +60,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
+    public int returnCurrentUsers() throws RemoteException{
+        int size = 0;
+        for (Users user : usersList) {
+            size++;
+        }
+        return size;
+    }
+
+    @Override
     public void sendDrawing(Double x1, Double y1, double x, double y, String color) throws RemoteException {
         for (Users user : usersList) {
             try {
@@ -69,6 +84,17 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         for (Users user : usersList) {
             try {
                 user.getClient().clearFromServer(x, y, n, m, color);
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void sendRound(int round) throws RemoteException{
+        for (Users user : usersList) {
+            try {
+                user.getClient().sendRoundFromServer(round);
             }catch (RemoteException e){
                 e.printStackTrace();
             }
@@ -98,7 +124,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    private String[] getUserList() {
+    public String[] getUserList() {
         // generate an array of current users
         String[] allUsers = new String[usersList.size()];
         for(int i = 0; i < allUsers.length; i++){
@@ -108,14 +134,33 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
-    public void updateChat(String userName, String chatMessage) throws RemoteException {
-        sendMessageToEverybody(userName + ": " + chatMessage);
+    public void leaveGame(String userName) throws RemoteException {
+        for(Users user : usersList){
+            if(user.getName().equals(userName)){
+                System.out.println(line + userName + " left the game session\n" + new Date(System.currentTimeMillis()) + "\n" + line);
+                usersList.remove(user);
+                updateUserList();
+                break;
+            }
+        }
     }
 
-    private void sendMessageToEverybody(String newMessage) {
+    @Override
+    public void enableDrawing(String name) throws RemoteException{
+          /*if (detail[0].equals(user.getName())) {
+              usersList.elementAt(0).getClient().enableDrawingFromSever();
+          }*/
+    }
+
+    @Override
+    public void updateChat(String userName, String chatMessage) throws RemoteException {
+        sendMessageToEverybody(userName , ": " + chatMessage);
+    }
+
+    private void sendMessageToEverybody(String username, String newMessage) {
         for (Users user : usersList) {
             try {
-                user.getClient().messageFromServer(newMessage);
+                user.getClient().messageFromServer(username, newMessage);
             }catch (RemoteException e){
                 e.printStackTrace();
             }
@@ -123,35 +168,37 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
-    public void registerUsers(String[] details) throws RemoteException {
-
-        System.out.println(new Date(System.currentTimeMillis()));
-        System.out.println(details[0] + " has joined the chat session");
-        System.out.println(details[0] + "'s hostname : " + details[1]);
-        System.out.println(details[0] + "'sRMI service : " + details[2]);
-
-        try{
-            ClientInterface nextClient = ( ClientInterface )Naming.lookup("rmi://" + details[1] + "/" + details[2]);
-            usersList.addElement(new Users(details[0], nextClient));
-            updateUserList();
+    public boolean checkIfUsernameExist(String username) throws RemoteException{
+        String[] currentUsers = getUserList();
+        for (int i = 0; i < getUserList().length; i++) {
+            if (currentUsers[i].equals(username) ) {
+                return true;
+            }
         }
-        catch(RemoteException | MalformedURLException | NotBoundException e){
-            e.printStackTrace();
-        }
+       /* for (String user : getUserList()) {
+            if (user.equals(username)) {
+                return true;
+            }
+        }*/
+        return false;
     }
 
     @Override
-    public void leaveChat(String userName) throws RemoteException {
-        for(Users c : usersList){
-            if(c.getName().equals(userName)){
-                System.out.println(line + userName + " left the chat session" + "\n" + line);
-                System.out.println(new Date(System.currentTimeMillis()));
-                usersList.remove(c);
+    public void registerUsers(String[] details) throws RemoteException {
+            System.out.println(new Date(System.currentTimeMillis()));
+            System.out.println(details[0] + " has joined the game session");
+            System.out.println(details[0] + "'s hostname : " + details[1]);
+            System.out.println(details[0] + "'s RMI service : " + details[2]);
+
+            try {
+                ClientInterface nextClient = (ClientInterface) Naming.lookup("rmi://" + details[1] + "/" + details[2]);
+                usersList.addElement(new Users(details[0], nextClient));
                 updateUserList();
-                break;
+            } catch (RemoteException | MalformedURLException | NotBoundException e) {
+                e.printStackTrace();
             }
-        }
     }
+
 
     @Override
     public void passIDentity(RemoteRef ref) throws RemoteException {

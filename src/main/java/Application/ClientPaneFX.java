@@ -1,6 +1,8 @@
 package Application;
 
+import Server.Server;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -31,22 +33,35 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 public class ClientPaneFX extends Application {
 
     private static final long serialVersionUID = 1L;
     private Label wordToGuess;
-    private final Canvas canvas = new Canvas(690, 620);
+    protected final Label roundsLabel = new Label();
+    public final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
-    private ToggleButton btnDraw,btnClear;
+    public ToggleButton btnDraw = new ToggleButton();
+    public ToggleButton btnClear = new ToggleButton();
     protected String color = "black";
-    protected String name;
     private Double x1 = null, y1 = null;
     private Client client;
     private Stage primaryStage;
-    private Button btnColorRed,btnColorBlack,btnColorGreen,btnColorPurple,btnColorPink,btnColorOrange,btnColorBlue;
+    public Button clearCanvas = new Button("CLEAR CANVAS");
+    public Button btnColorRed = new Button();
+    public Button btnColorBlack = new Button();
+    public Button btnColorGreen = new Button();
+    public Button btnColorPurple = new Button();
+    public Button btnColorPink = new Button();
+    public Button btnColorOrange  = new Button();
+    public Button btnColorBlue = new Button();
+    public Button btnColorYellow = new Button();
     protected TextArea chatSection = new TextArea();
     protected TextArea users = new TextArea();
     private final TextField chatField = new TextField();
@@ -70,13 +85,32 @@ public class ClientPaneFX extends Application {
         howToPlay.getStyleClass().add("link-howToPlay");
         howToPlay.setOnMouseClicked(e ->  alert.show());
 
+        Button start = new Button("PLAY!");
+
+        Label showErrorUsername = new Label("username already exist");
+        showErrorUsername.setVisible(false);
+
         userName = new TextField();
         userName.setPromptText("Enter your name");
         userName.getStyleClass().add("username-textField");
+        userName.setOnKeyTyped(e -> start.setDisable(userName.getText().length() <= 0));
 
-        Button start = new Button("PLAY!");
+
         start.getStyleClass().add("btn-start");
+        start.setDisable(true);
         start.setOnMouseClicked(this::secondStage);
+        /*start.setOnMouseClicked(e-> {try {
+            client = new Client(this, userName.getText().replaceAll("\\W+","_"));
+            client.startClient();
+            if (client.serverInterface.checkIfUsernameExist(userName.getText())) {
+                start.setDisable(true);
+            }else {
+                System.out.println("hey");
+                //getConnected();
+            }
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+        }});*/
 
         VBox startSection = new VBox();
         startSection.getChildren().addAll(scrawlLogoView,howToPlay,userName,start,labelSystemInfo);
@@ -86,7 +120,10 @@ public class ClientPaneFX extends Application {
         scene.getStylesheets().add("Style.css");
 
         onCloseStageEvent();
-        primaryStage.getIcons().add(new Image(new File("src/main/resources/favicon.png").toURI().toString()));//ICON from FlatIcon By Freepik
+        primaryStage.getIcons()
+                .add(new Image(new File("src/main/resources/favicon.png")
+                        .toURI()
+                        .toString()));//ICON from FlatIcon By Freepik
         primaryStage.setTitle("Scrawl Game");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -97,8 +134,7 @@ public class ClientPaneFX extends Application {
         primaryStage.setOnCloseRequest(e -> {
             if(client != null){
                 try {
-                    client.serverInterface.leaveChat(name);
-
+                    client.serverInterface.leaveGame(userName.getText());
                 } catch (RemoteException exception) {
                     exception.printStackTrace();
                 }
@@ -108,13 +144,6 @@ public class ClientPaneFX extends Application {
     }
 
     private void secondStage(MouseEvent mouseEvent) {
-
-        try {
-            name = userName.getText();
-            getConnected(name);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
 
         wordToGuess = new Label();
         wordToGuess.setText(showWordToGuess());
@@ -128,7 +157,7 @@ public class ClientPaneFX extends Application {
         chatSection.setWrapText(true);
 
         chatField.getStyleClass().add("chatField-textField");
-        chatField.setMaxWidth(240);
+        chatField.setMaxWidth(260);
         chatField.setPromptText("Type your guess here...");
         chatField.setOnKeyPressed(this::sendMessage);
 
@@ -138,41 +167,45 @@ public class ClientPaneFX extends Application {
 
         HBox marginRightPane = new HBox();
         marginRightPane.getChildren().addAll(rightPane);
-        HBox.setMargin(rightPane, new Insets(40, 20, 30, 30));
+        HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
+
+        //roundsLabel.setText("Round 0 of 3");
+        roundsLabel.getStyleClass().add("roundsLabel-style");
 
         VBox marginCanvas = new VBox();
-        marginCanvas.getChildren().addAll(wordToGuess,canvas,labelSystemInfo);
+        marginCanvas.getChildren().addAll(wordToGuess,canvas);
         marginCanvas.getStyleClass().add("marginCanvas-style");
 
         VBox leftPane = new VBox();
+        leftPane.getChildren().addAll(roundsLabel);
         leftPane.getStyleClass().add("leftPane-style");
         leftPane.setAlignment(Pos.CENTER);
 
         HBox marginLeftPane = new HBox();
         marginLeftPane.getChildren().addAll(leftPane);
-        HBox.setMargin(leftPane, new Insets(40, 30, 30, 20));
+        HBox.setMargin(leftPane, new Insets(50, 25, 25, 25));
 
         final ToggleGroup options = new ToggleGroup();
 
         ImageView viewEraseImage = new ImageView(new Image("eraser.png"));
-        viewEraseImage.setFitHeight(25);
+        viewEraseImage.setFitHeight(30);
         viewEraseImage.setPreserveRatio(true);
-        btnClear = new ToggleButton();
-        btnClear.setPrefSize(25, 25);
+
         btnClear.setGraphic(viewEraseImage);
         btnClear.getStyleClass().add("btnClear");
         btnClear.setToggleGroup(options);
         btnClear.setTooltip(new Tooltip("ERASER \nErase part of the picture\nand replace it with the background color."));
+        btnClear.setVisible(false);
 
-        ImageView viewDrawImage = new ImageView(new Image("favicon.png"));
-        viewDrawImage.setFitHeight(25);
+        ImageView viewDrawImage = new ImageView(new Image("pencil_64px.png"));
+        viewDrawImage.setFitHeight(30);
         viewDrawImage.setPreserveRatio(true);
-        btnDraw = new ToggleButton();
-        btnDraw.setPrefSize(25, 25);
+
         btnDraw.setGraphic(viewDrawImage);
         btnDraw.getStyleClass().add("btnClear");
         btnDraw.setToggleGroup(options);
         btnDraw.setTooltip(new Tooltip("PENCIL\nDraw a free form line with the\nselected color."));
+        btnDraw.setVisible(false);
 
         HBox utilitiesBtnSection = new HBox();
         utilitiesBtnSection.getStyleClass().add("utility-btnSection");
@@ -181,53 +214,55 @@ public class ClientPaneFX extends Application {
         HBox colorSection1 = new HBox();
         colorSection1.getStyleClass().add("colorSection1-style");
 
-        btnColorRed = new Button();
         btnColorRed.getStyleClass().add("btn-Red");
         btnColorRed.setOnAction(this::processColorChange);
+        btnColorRed.setVisible(false);
 
-        btnColorBlack = new Button();
         btnColorBlack.getStyleClass().add("btn-Black");
         btnColorBlack.setOnAction(this::processColorChange);
+        btnColorBlack.setVisible(false);
 
-        btnColorBlue = new Button();
         btnColorBlue.getStyleClass().add("btn-Blue");
         btnColorBlue.setOnAction(this::processColorChange);
+        btnColorBlue.setVisible(false);
 
-        btnColorPink = new Button();
         btnColorPink.getStyleClass().add("btn-Pink");
         btnColorPink.setOnAction(this::processColorChange);
+        btnColorPink.setVisible(false);
 
         colorSection1.getChildren().addAll(btnColorRed, btnColorBlack, btnColorBlue,btnColorPink);
 
         HBox colorSection2 = new HBox();
         colorSection2.getStyleClass().add("colorSection1-style");
 
-        Button btnColorYellow = new Button();
         btnColorYellow.getStyleClass().add("btn-Yellow");
         btnColorYellow.setOnAction(this::processColorChange);
+        btnColorYellow.setVisible(false);
 
         btnColorOrange = new Button();
         btnColorOrange.setStyle("");
         btnColorOrange.getStyleClass().add("btn-Orange");
         btnColorOrange.setOnAction(this::processColorChange);
+        btnColorOrange.setVisible(false);
 
         btnColorGreen = new Button();
         btnColorGreen.getStyleClass().add("btn-Green");
         btnColorGreen.setOnAction(this::processColorChange);
+        btnColorGreen.setVisible(false);
 
         btnColorPurple = new Button();
         btnColorPurple.getStyleClass().add("btn-Purple");
         btnColorPurple.setOnAction(this::processColorChange);
+        btnColorPurple.setVisible(false);
 
         colorSection2.getChildren().addAll(btnColorYellow,btnColorOrange,btnColorGreen,btnColorPurple);
 
-        Button clearCanvas = new Button("CLEAR CANVAS");
-        clearCanvas.setPadding(new Insets(8, 8, 8, 8));
+        clearCanvas.setPadding(new Insets(9, 9, 9, 9));
         clearCanvas.getStyleClass().add("btn-ClearCanvas");
         clearCanvas.setOnMouseClicked(this::clearCanvas);
+        clearCanvas.setVisible(false);
 
         leftPane.getChildren().addAll(users,utilitiesBtnSection,colorSection1,colorSection2,clearCanvas);
-        leftPane.setPrefWidth(280);
         leftPane.setSpacing(25.0);
 
         BoxBlur blur = new BoxBlur();
@@ -245,22 +280,88 @@ public class ClientPaneFX extends Application {
         canvas.setOnMouseDragged(this::cursorDragged);
         canvas.setOnMouseClicked(this::cursorClick);
         canvas.setOnMouseReleased(this::cursorReleased);
+        canvas.setDisable(true);
 
         BorderPane rootPane = new BorderPane();
         rootPane.setLeft(marginLeftPane);
         rootPane.setCenter(marginCanvas);
         rootPane.setRight(marginRightPane);
 
+        try {
+            getConnected();
+            //setTimerGame();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         Scene secondStage = new Scene(rootPane);
         secondStage.getStylesheets().add("Style.css");
+        rootPane.setStyle("-fx-background-color: #ECEFF1;");
+        //#263238 --> black theme
+        //#ECEFF1 --> white theme
 
         primaryStage.setScene(secondStage);
-
         ScrollBar scrollBar = (ScrollBar) chatSection.lookup(".scroll-bar:vertical");
         scrollBar.setDisable(true);
+    }
+
+
+    /**
+     * 4*60*1000
+     * After 3 rounds the game is over and the player with most points will win.
+     * - Players will be prompted to the initial scene in which they will be asked
+     *   if they want to play again, if so repeat the cycle again.
+     *   Methods:
+     *   pickPlayerToDraw();
+     *   showWordToGuess();
+     *   givePoints();
+     *   roundsLabel.setText("Round " + finalRound[0]++ + " of " + " 3");
+     *   chooseWinner();
+     *   showScenePlayAgain();
+     */
+ /*   private void setTimerGame() throws RemoteException {
+        //if (client.serverInterface.returnCurrentUsers() == 1) {
+            roundsLabel.setText("Round 1 of 3");
+            Timer timerGameSession = new Timer();
+            timerGameSession.schedule(new TimerTask() {
+                int round = 1;
+
+                @Override
+                public void run() {
+                    if (round == 3) {
+                        //chooseWinner();
+                        timerGameSession.cancel();
+                        timerGameSession.purge();
+                        return;
+                    }
+                    Platform.runLater(() -> roundsLabel.setText("Round " + round + " of 3"));
+                    *//*sendRoundToServer(round);*//*
+                    //pickPlayerToDraw();
+                    round++;
+                }
+            }, 1 * 30 * 1000, 1 * 30 * 1000);
+       // }
+
+    }*/
+
+
+
+    private void validateGuess() {
 
     }
 
+    private void chooseWinner() {
+
+    }
+
+    private int givePoints() {
+        validateGuess();
+        return 0;
+    }
+
+    private void pickPlayerToDraw() {
+
+    }
 
     public void processColorChange(ActionEvent event) {
         btnDraw.setSelected(true);
@@ -314,26 +415,19 @@ public class ClientPaneFX extends Application {
         }
     }
 
-
     private String showWordToGuess(){
-        Scanner scan;
-        List<String> wordsEveryoneCanSee = new ArrayList<>();
-        //List<String> wordsOnlyThePlayerCanSee = new ArrayList<>();
-        String  wrd ,wordEveryoneCanSee= "";
-        //Path path = Path.of("src/main/resources/WordsToGuess.txt");
-        try {
+        //String  wrd ,wordEveryoneCanSee= "";
+        Path path = Path.of("src/main/resources/WordsToGuess.txt");
+        List<String> wordsEveryoneCanSee;
+        List<String> wordsOnlyPlayerCanSee;
 
-            scan = new Scanner(new File("src/main/resources/WordsToGuess.txt"));
-            while (scan.hasNext()){
-                wordsEveryoneCanSee.add(scan.nextLine());
-                // wordsOnlyThePlayerCanSee.add(scan.nextLine());
-            }
-            for (int i = 0; i < wordsEveryoneCanSee.get(i).length(); i++) {
+        try {
+            wordsOnlyPlayerCanSee = Files.lines(path).collect(toList());
+          /*  for (int i = 0; i < wordsEveryoneCanSee.get(i).length(); i++) {
                 wrd = wordsEveryoneCanSee.get(i);
                 wordEveryoneCanSee = wrd.charAt(0) + StringUtils.repeat("_", (i-1)) + wrd.charAt(wrd.length()-1);
-            }
-            scan.close();
-            return wordEveryoneCanSee.toUpperCase();
+            }*/
+            return wordsOnlyPlayerCanSee.get(2);
 
         }catch (Exception exception){
             return null;
@@ -366,7 +460,7 @@ public class ClientPaneFX extends Application {
     private void sendMessage(KeyEvent keyEvent){
         if (keyEvent.getCode() == KeyCode.ENTER){
             try {
-                client.serverInterface.updateChat(name, chatField.getText());
+                client.serverInterface.updateChat(userName.getText(), chatField.getText());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -374,14 +468,10 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    private void getConnected(String userName) throws RemoteException{
-        try {
-            //remove whitespace and non word characters to avoid malformed url
-            client = new Client(this, userName.replaceAll("\\W+","_"));
+    private void getConnected() throws RemoteException {
+
+            client = new Client(this, userName.getText().replaceAll("\\W+","_"));
             client.startClient();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main (String[]args){

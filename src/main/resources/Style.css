@@ -6,7 +6,7 @@
 .system-info{
     -fx-font-family: 'JetBrains Mono NL';
     -fx-font-size: 14;
-    -fx-text-fill: #242c37;
+    -fx-text-fill: #212121;
 }
 
 .logo-View{
@@ -16,6 +16,7 @@
 
 .link-howToPlay{
     -fx-font-size: 18;
+    -fx-text-fill: #fff;
 }
 
 .username-textField{
@@ -23,6 +24,7 @@
     -fx-pref-height: 35;
     -fx-border-radius: 6 6 6 6;
     -fx-background-radius: 6 6 6 6;
+    -fx-alignment: center;
 }
 
 .btn-start{
@@ -53,31 +55,33 @@
     -fx-spacing: 10;
     -fx-pref-height: 700;
     -fx-pref-width: 1350;
-    -fx-alignment: center
+    -fx-alignment: center;
+    -fx-background-color: #ECEFF1;
 }
 
 .wordToGuess-label{
     -fx-pref-height: 25;
-    -fx-text-fill: #242c37;
+    -fx-text-fill: #212121;
     -fx-font-weight: bold;
     -fx-font-size: 18;
     -fx-font-family: 'JetBrains Mono Medium';
+    -fx-padding: -10 0 0 0;
 }
 
 .users-textarea{
-    -fx-alignment: center;-fx-max-width: 250;
+    -fx-alignment: center;
+    -fx-max-width: 270;
     -fx-pref-height: 290;
-    -fx-background-color: #242c37;
-    -fx-control-inner-background: #242c37;
+    -fx-background-color: #262626;
+    -fx-control-inner-background: #262626;
     -fx-font-weight: bold;
     -fx-text-fill: #fff;
     -fx-font-size: 14;
     -fx-font-family: 'JetBrains Mono Medium';
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
-    -fx-text-box-border: transparent;
     -fx-faint-focus-color: transparent;
-    -fx-focus-color: transparent;-fx-padding: 10
+    -fx-padding: 10;
 }
 
 .users-textarea .content {
@@ -86,28 +90,31 @@
 
 .chatSection-textarea{
     -fx-pref-height: 540;
-    -fx-pref-width: 280;
-    -fx-background-color: #151a21;
-    -fx-control-inner-background: #151a21;
-    -fx-text-box-border: transparent;
-    -fx-text-fill: #fff;
-    -fx-faint-focus-color: transparent;
+    -fx-pref-width: 300;
     -fx-focus-color: transparent;
+    -fx-text-box-border: transparent;
+    -fx-font-weight: bold;
+    -fx-background-color: #212121;
+    -fx-control-inner-background: #212121;
+    -fx-text-fill: #fff;
     -fx-font-size: 14;
     -fx-font-family: 'JetBrains Mono Medium';
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
-    -fx-padding: 10;
+    -fx-faint-focus-color: transparent;
+    -fx-padding: 0 0 0 15;
 }
 
 .chatSection-textarea .content {
     -fx-background-radius: 0 ;
+    -fx-background-color: #212121;
 }
 
 .chatField-textField{
     -fx-pref-height: 40;
-    -fx-background-color: #242c37;
-    -fx-text-fill: #ffff;
+    -fx-background-color: #262626;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
 }
@@ -115,34 +122,40 @@
 .rightPane-style{
     -fx-pref-height: 620;
     -fx-alignment: center;
-    -fx-background-color: #171A1A;
+    -fx-background-color: #212121;
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
+}
+
+.roundsLabel-style{
+    -fx-font-weight: bold;
+    -fx-font-size: 18;
+    -fx-alignment: center;
+    -fx-text-fill: #ECEFF1;
 }
 
 .marginCanvas-style{
     -fx-alignment: center;
-    -fx-spacing: 7;
 }
 
 .leftPane-style{
-    -fx-background-color: #151a21;
+    -fx-background-color: #212121;
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
+    -fx-pref-width: 300;
 }
 
 .btnClear{
-    -fx-background-color: #242c37;
+    -fx-background-color: #262626;
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
 }
 
 .btnClear:hover{
-    -fx-background-color: #3c4458;
+    -fx-background-color: #B1B1B1;
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
 }
-
 
 .utility-btnSection{
     -fx-alignment: center;
@@ -203,7 +216,7 @@
 }
 
 .btn-ClearCanvas{
-    -fx-background-color: #242c37;
+    -fx-background-color: #262626;
     -fx-font-weight: bold;
     -fx-text-fill: #fff;
     -fx-border-radius: 8 8 8 8;
@@ -211,16 +224,13 @@
 }
 
 .btn-ClearCanvas:hover{
-    -fx-background-color: #3c4458;
+    -fx-background-color: #B1B1B1;
     -fx-font-weight: bold;
-    -fx-text-fill: #fff;
+    -fx-text-fill: #212121;
     -fx-font-family: 'JetBrains Mono NL';
     -fx-border-radius: 8 8 8 8;
     -fx-background-radius: 8 8 8 8;
 }
-
-
-
 
 
 

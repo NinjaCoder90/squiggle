@@ -62,7 +62,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <mainClass>GUI.ClientPaneFX</mainClass>
+                    <mainClass>Application.ClientPaneFX</mainClass>
                 </configuration>
             </plugin>
         </plugins>

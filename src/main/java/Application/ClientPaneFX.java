@@ -69,7 +69,8 @@ public class ClientPaneFX extends Application {
     private final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     private TextField userName;
-    public int rnd, i = 0;
+    public int rnd, i = 0, count = 0;
+    private List<String> wordToGuessList;
 
 
     @Override
@@ -138,6 +139,7 @@ public class ClientPaneFX extends Application {
                     exception.printStackTrace();
                 }
             }
+            Platform.exit();
             System.exit(0);
         });
     }
@@ -145,7 +147,7 @@ public class ClientPaneFX extends Application {
     private void secondStage(MouseEvent mouseEvent) {
 
         wordToGuess = new Label();
-        wordToGuess.setText(showWordToGuess());
+        //wordToGuess.setText(showWordToGuess());
         wordToGuess.getStyleClass().add("wordToGuess-label");
 
         users.getStyleClass().add("users-textarea");
@@ -168,7 +170,7 @@ public class ClientPaneFX extends Application {
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
 
-        scoreLabel.setText("Points: ");
+        scoreLabel.setText("Points: 0");
         scoreLabel.getStyleClass().add("scoreLabel-style");
 
         VBox marginCanvas = new VBox();
@@ -287,7 +289,8 @@ public class ClientPaneFX extends Application {
         rootPane.setRight(marginRightPane);
 
         getConnected();
-        setRoundLabel();
+        checkIfThisUserHasControl();
+        updateRoundLabel();
 
         roundsLabel.getStyleClass().add("roundsLabel-style");
 
@@ -320,17 +323,13 @@ public class ClientPaneFX extends Application {
     }
 */
 
-    public void setRoundLabel(){
+    public void updateRoundLabel(){
         try {
             if (client.serverInterface.returnCurrentUsers() == 1) {
                 client.serverInterface.setTimerGame();
             }
             client.serverInterface.updateRound();
-            if (client.serverInterface.returnCurrentUsers() > 1) {
-                roundsLabel.setText("Round " + (rnd-1) + " of 3");
-            }else {
-                roundsLabel.setText("Round " + rnd + " of 3");
-            }
+            roundsLabel.setText("Round " + rnd + " of 3");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -359,8 +358,8 @@ public class ClientPaneFX extends Application {
     private void clearCanvas(MouseEvent mouseEvent) {
        try {
            gc.setFill(Color.WHITE);
-           gc.fillRect(0, 0, 695, 625);
-           client.serverInterface.sendClearCanvas(0,0,695,625,"white");
+           gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+           client.serverInterface.sendClearCanvas(0,0,690,620,"white");
        }catch(RemoteException e){
            e.printStackTrace();
        }
@@ -388,19 +387,44 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    private String showWordToGuess(){
-        //String  wrd ,wordEveryoneCanSee= "";
+    //Then we know he has the control and we give him the full word.
+    // in the other case (for users that dont have the control)
+    // we give them the word with missing letters.
+    //if userType == true --> get wordsOnlyPlayerCanSee
+    //if userType == false --> get wordsEveryoneCanSee
+    public void checkIfThisUserHasControl(){
+        try {
+            if (btnDraw.isVisible()) {
+                Platform.runLater(() -> wordToGuess.setText(showWordToGuess(true)));
+            }else {
+                client.serverInterface.updateIndexWord();
+                Platform.runLater(() -> wordToGuess.setText(showWordToGuess(false)));
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        /*
+        if (btnDraw.isVisible()) {
+            Platform.runLater(() -> wordToGuess.setText(showWordToGuess(true)));
+        }else {
+            Platform.runLater(() -> wordToGuess.setText(showWordToGuess(false)));
+        }*/
+    }
+
+    private String showWordToGuess(boolean userType){
         Path path = Path.of("src/main/resources/WordsToGuess.txt");
-        List<String> wordsEveryoneCanSee;
-        List<String> wordsOnlyPlayerCanSee;
+        String wordToGuessString = "";
+        String wrd = "";
 
         try {
-            wordsOnlyPlayerCanSee = Files.lines(path).collect(toList());
-          /*  for (int i = 0; i < wordsEveryoneCanSee.get(i).length(); i++) {
-                wrd = wordsEveryoneCanSee.get(i);
-                wordEveryoneCanSee = wrd.charAt(0) + StringUtils.repeat("_", (i-1)) + wrd.charAt(wrd.length()-1);
-            }*/
-            return wordsOnlyPlayerCanSee.get(2);
+            wordToGuessList = Files.lines(path).collect(toList());
+            //count++;
+            for (int i = 0; i < wordToGuessList.get(count).length(); i++) {
+                wrd = wordToGuessList.get(count);
+                wordToGuessString = wrd.charAt(0) + StringUtils.repeat("_", (i-1)) + wrd.charAt(wrd.length()-1);
+            }
+
+            return (userType ? wordToGuessList.get(count)  : wordToGuessString);
 
         }catch (Exception exception){
             return null;
@@ -408,9 +432,8 @@ public class ClientPaneFX extends Application {
     }
 
     private void validateGuessGivePoints() {
-        //wordsOnlyPlayerCanSee = Files.lines(path).collect(toList());
         if (i == 0){
-            if (chatField.getText().compareToIgnoreCase(Objects.requireNonNull(showWordToGuess())) == 0){
+            if (chatField.getText().compareToIgnoreCase(Objects.requireNonNull(wordToGuessList.get(count))) == 0){
                 Users.setScore(Users.getScore() + 10);
                 scoreLabel.setText("Points: " + Users.getScore());
                 i = 1;

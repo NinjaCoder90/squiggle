@@ -23,4 +23,10 @@ public interface ClientInterface extends Remote {
 
     public void resetFromServer() throws RemoteException;
 
+    public void checkFromServer() throws RemoteException;
+
+    public void showNextWordToGuessFromServer() throws RemoteException;
+
+    public void updateIndexWordFromServer(int index) throws RemoteException;
+
 }

@@ -114,6 +114,26 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     @Override
+    public void checkFromServer() throws RemoteException {
+        //decrement count in ClientPaneFX, because, without decrementing the count variable
+        //the word to guess shown for the next user would be the next word from the list and not
+        //the current one.
+        //chatGUI.count--;
+        chatGUI.checkIfThisUserHasControl();
+    }
+
+    @Override
+    public void showNextWordToGuessFromServer() throws RemoteException {
+        chatGUI.count++;
+        chatGUI.checkIfThisUserHasControl();
+    }
+
+    @Override
+    public void updateIndexWordFromServer(int index) throws RemoteException {
+        chatGUI.count = index;
+    }
+
+    @Override
     public void updateUserListFromServer(String[] currentUsers) throws RemoteException {
 
         if (name.equals(currentUsers[0])) {

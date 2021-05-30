@@ -86,6 +86,7 @@
 
 .users-textarea .content {
     -fx-background-radius: 0 ;
+    -fx-background-color: #262626;
 }
 
 .chatSection-textarea{
@@ -236,7 +237,8 @@
     -fx-font-weight: bold;
     -fx-font-size: 18;
     -fx-text-fill: #fff;
-    -fx-padding: 0 0 -20 0;
+    -fx-alignment: center;
+    -fx-padding: 0 0 -20 -25;
 }
 
 

@@ -32,4 +32,6 @@ public interface ServerInterface extends Remote {
 
     public void setTimerGame() throws RemoteException;
 
+    public void updateIndexWord() throws RemoteException;
+
 }

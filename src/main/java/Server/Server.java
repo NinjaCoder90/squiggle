@@ -13,13 +13,15 @@ import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     public static int round = 1;
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
-    public static final Vector<Users> usersList = new Vector<>(10,1);;
+    public static CopyOnWriteArrayList<Users> usersList = new CopyOnWriteArrayList<>();
+    public int indexWord = 0;
 
     public Server() throws RemoteException {
         super();
@@ -57,11 +59,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     @Override
     public int returnCurrentUsers() throws RemoteException{
-        int size = 0;
-        for (Users user : usersList) {
-            size++;
-        }
-        return size;
+        return usersList.size();
     }
 
     @Override
@@ -125,6 +123,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
             @Override
             public void run() {
+                round++;
                 if (round == 4) {
                     //chooseWinner();
                     timerGameSession.cancel();
@@ -134,18 +133,43 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 }
                 sendRound(round);
                 //pickPlayerToDraw();
-                round++;
+                showNextWordToGuess();
                 reset();
             }
         }, 2 * 10 * 1000,2 * 10 * 1000);
     }
 
+    @Override
+    public void updateIndexWord() throws RemoteException{
+        for (Users user : usersList) {
+            try {
+                user.getClient().updateIndexWordFromServer(indexWord);
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void showNextWordToGuess(){
+        indexWord++;
+        for (Users user : usersList) {
+            try {
+                user.getClient().showNextWordToGuessFromServer();
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*private void pickPlayerToDraw(){
+
+    }*/
 
     @Override
     public void sendClearCanvas(int v, int v1, int v2, int v3, String color) throws RemoteException {
         for (Users user : usersList) {
             try {
-                user.getClient().clearFromServer(v, v1, v2, v3, color);
+                user.getClient().ClearCanvasFromServer(v, v1, v2, v3, color);
             }catch (RemoteException e){
                 e.printStackTrace();
             }
@@ -168,9 +192,19 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         // generate an array of current users
         String[] allUsers = new String[usersList.size()];
         for(int i = 0; i < allUsers.length; i++){
-            allUsers[i] = usersList.elementAt(i).getName();
+            allUsers[i] = usersList.get(i).getName();
         }
         return allUsers;
+    }
+
+    public void checkIfThisUserHasControl(){
+        for (Users user : usersList) {
+            try {
+                user.getClient().checkFromServer();
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -180,6 +214,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 System.out.println(line + userName + " left the game session\n" + new Date(System.currentTimeMillis()) + "\n" + line);
                 usersList.remove(user);
                 updateUserList();
+                checkIfThisUserHasControl();
                 break;
             }
         }
@@ -232,13 +267,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             int score = 0;
             try {
                 ClientInterface nextClient = (ClientInterface) Naming.lookup("rmi://" + details[1] + "/" + details[2]);
-                usersList.addElement(new Users(details[0], nextClient,score));
+                usersList.add(new Users(details[0], nextClient, score));
                 updateUserList();
             } catch (RemoteException | MalformedURLException | NotBoundException e) {
                 e.printStackTrace();
             }
     }
-
 
     @Override
     public void passIDentity(RemoteRef ref) throws RemoteException {
@@ -248,6 +282,5 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             e.printStackTrace();
         }
     }
-
 }
 

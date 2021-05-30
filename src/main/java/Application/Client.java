@@ -109,6 +109,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     @Override
+    public void resetFromServer() throws RemoteException {
+        chatGUI.i = 0;
+    }
+
+    @Override
     public void updateUserListFromServer(String[] currentUsers) throws RemoteException {
 
         if (name.equals(currentUsers[0])) {

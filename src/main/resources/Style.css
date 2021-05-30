@@ -65,13 +65,13 @@
     -fx-font-weight: bold;
     -fx-font-size: 18;
     -fx-font-family: 'JetBrains Mono Medium';
-    -fx-padding: -10 0 0 0;
+    -fx-padding: -25 0 0 0;
 }
 
 .users-textarea{
     -fx-alignment: center;
     -fx-max-width: 270;
-    -fx-pref-height: 290;
+    -fx-pref-height: 260;
     -fx-background-color: #262626;
     -fx-control-inner-background: #262626;
     -fx-font-weight: bold;
@@ -232,6 +232,12 @@
     -fx-background-radius: 8 8 8 8;
 }
 
+.scoreLabel-style{
+    -fx-font-weight: bold;
+    -fx-font-size: 18;
+    -fx-text-fill: #fff;
+    -fx-padding: 0 0 -20 0;
+}
 
 
 

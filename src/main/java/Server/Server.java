@@ -20,7 +20,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
     public static final Vector<Users> usersList = new Vector<>(10,1);;
-    String[] detail;
 
     public Server() throws RemoteException {
         super();
@@ -87,6 +86,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
+    @Override
+    public void updateRound(){
+        for (Users user : usersList) {
+            try {
+                user.getClient().updateRoundFromServer(round);
+            }catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static void sendRound(int round){
         for (Users user : usersList) {
@@ -98,11 +107,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    @Override
-    public void updateRound(){
+    public static void reset(){
         for (Users user : usersList) {
             try {
-                user.getClient().updateRoundFromServer(round);
+                user.getClient().resetFromServer();
             }catch (RemoteException e){
                 e.printStackTrace();
             }
@@ -127,6 +135,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 sendRound(round);
                 //pickPlayerToDraw();
                 round++;
+                reset();
             }
         }, 2 * 10 * 1000,2 * 10 * 1000);
     }
@@ -220,10 +229,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             System.out.println(details[0] + " has joined the game session");
             System.out.println(details[0] + "'s hostname : " + details[1]);
             System.out.println(details[0] + "'s RMI service : " + details[2]);
-
+            int score = 0;
             try {
                 ClientInterface nextClient = (ClientInterface) Naming.lookup("rmi://" + details[1] + "/" + details[2]);
-                usersList.addElement(new Users(details[0], nextClient));
+                usersList.addElement(new Users(details[0], nextClient,score));
                 updateUserList();
             } catch (RemoteException | MalformedURLException | NotBoundException e) {
                 e.printStackTrace();

@@ -38,13 +38,15 @@ import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import Shared.Users;
+
 import static java.util.stream.Collectors.toList;
 
 public class ClientPaneFX extends Application {
 
     private static final long serialVersionUID = 1L;
     private Label wordToGuess;
-    public Label roundsLabel = new Label();
+    public Label roundsLabel = new Label(),scoreLabel = new Label();
     public final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
     public ToggleButton btnDraw = new ToggleButton();
@@ -67,7 +69,7 @@ public class ClientPaneFX extends Application {
     private final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     private TextField userName;
-    public int rnd;
+    public int rnd, i = 0;
 
 
     @Override
@@ -95,7 +97,6 @@ public class ClientPaneFX extends Application {
         userName.setPromptText("Enter your name");
         userName.getStyleClass().add("username-textField");
         userName.setOnKeyTyped(e -> start.setDisable(userName.getText().length() <= 0));
-
 
         start.getStyleClass().add("btn-start");
         start.setDisable(true);
@@ -167,12 +168,15 @@ public class ClientPaneFX extends Application {
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
 
+        scoreLabel.setText("Points: ");
+        scoreLabel.getStyleClass().add("scoreLabel-style");
+
         VBox marginCanvas = new VBox();
         marginCanvas.getChildren().addAll(wordToGuess,canvas);
         marginCanvas.getStyleClass().add("marginCanvas-style");
 
         VBox leftPane = new VBox();
-        leftPane.getChildren().addAll(roundsLabel);
+        leftPane.getChildren().addAll(scoreLabel,roundsLabel);
         leftPane.getStyleClass().add("leftPane-style");
         leftPane.setAlignment(Pos.CENTER);
 
@@ -282,20 +286,8 @@ public class ClientPaneFX extends Application {
         rootPane.setCenter(marginCanvas);
         rootPane.setRight(marginRightPane);
 
-        try {
-            getConnected();
-            if (client.serverInterface.returnCurrentUsers() == 1) {
-                client.serverInterface.setTimerGame();
-            }
-            client.serverInterface.updateRound();
-            if (client.serverInterface.returnCurrentUsers() > 1) {
-                roundsLabel.setText("Round " + (rnd-1) + " of 3");
-            }else {
-                roundsLabel.setText("Round " + rnd + " of 3");
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        getConnected();
+        setRoundLabel();
 
         roundsLabel.getStyleClass().add("roundsLabel-style");
 
@@ -309,22 +301,7 @@ public class ClientPaneFX extends Application {
         ScrollBar scrollBar = (ScrollBar) chatSection.lookup(".scroll-bar:vertical");
         scrollBar.setDisable(true);
     }
-
-
-    /**
-     * 4*60*1000
-     * After 3 rounds the game is over and the player with most points will win.
-     * - Players will be prompted to the initial scene in which they will be asked
-     *   if they want to play again, if so repeat the cycle again.
-     *   Methods:
-     *   pickPlayerToDraw();
-     *   showWordToGuess();
-     *   givePoints();
-     *   roundsLabel.setText("Round " + finalRound[0]++ + " of " + " 3");
-     *   chooseWinner();
-     *   showScenePlayAgain();
-     */
-
+/*
     private void validateGuess() {
 
     }
@@ -333,13 +310,30 @@ public class ClientPaneFX extends Application {
 
     }
 
-    private int givePoints() {
+    private int validateGuessGivePoints() {
         validateGuess();
         return 0;
     }
 
     private void pickPlayerToDraw() {
 
+    }
+*/
+
+    public void setRoundLabel(){
+        try {
+            if (client.serverInterface.returnCurrentUsers() == 1) {
+                client.serverInterface.setTimerGame();
+            }
+            client.serverInterface.updateRound();
+            if (client.serverInterface.returnCurrentUsers() > 1) {
+                roundsLabel.setText("Round " + (rnd-1) + " of 3");
+            }else {
+                roundsLabel.setText("Round " + rnd + " of 3");
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void processColorChange(ActionEvent event) {
@@ -413,6 +407,17 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    private void validateGuessGivePoints() {
+        //wordsOnlyPlayerCanSee = Files.lines(path).collect(toList());
+        if (i == 0){
+            if (chatField.getText().compareToIgnoreCase(Objects.requireNonNull(showWordToGuess())) == 0){
+                Users.setScore(Users.getScore() + 10);
+                scoreLabel.setText("Points: " + Users.getScore());
+                i = 1;
+            }
+        }
+    }
+
     private void cursorDragged(MouseEvent mouseEvent){
        try{
            if (btnDraw.isSelected()) {
@@ -438,6 +443,7 @@ public class ClientPaneFX extends Application {
 
     private void sendMessage(KeyEvent keyEvent){
         if (keyEvent.getCode() == KeyCode.ENTER){
+            validateGuessGivePoints();
             try {
                 client.serverInterface.updateChat(userName.getText(), chatField.getText());
             } catch (RemoteException e) {
@@ -447,10 +453,13 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    private void getConnected() throws RemoteException {
-
+    private void getConnected(){
+        try {
             client = new Client(this, userName.getText().replaceAll("\\W+","_"));
             client.startClient();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main (String[]args){

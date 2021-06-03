@@ -1,13 +1,10 @@
 package Application;
 
-import Server.Server;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -22,7 +19,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.stage.Stage;
@@ -38,7 +34,7 @@ import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.util.*;
 
-import Shared.Users;
+import Application.Shared.Users;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,31 +42,34 @@ public class ClientPaneFX extends Application {
 
     private static final long serialVersionUID = 1L;
     private Label wordToGuess;
-    public Label roundsLabel = new Label(),scoreLabel = new Label();
-    public final Canvas canvas = new Canvas(690, 620);
+    protected Label roundsLabel = new Label(),scoreLabel = new Label();
+    protected final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
-    public ToggleButton btnDraw = new ToggleButton();
-    public ToggleButton btnClear = new ToggleButton();
+    protected ToggleButton btnDraw = new ToggleButton();
+    protected ToggleButton btnClear = new ToggleButton();
     protected String color = "black";
     private Double x1 = null, y1 = null;
     private Client client;
     private Stage primaryStage;
-    public Button clearCanvas = new Button("CLEAR CANVAS");
-    public Button btnColorRed = new Button();
-    public Button btnColorBlack = new Button();
-    public Button btnColorGreen = new Button();
-    public Button btnColorPurple = new Button();
-    public Button btnColorPink = new Button();
-    public Button btnColorOrange  = new Button();
-    public Button btnColorBlue = new Button();
-    public Button btnColorYellow = new Button();
+    protected Button clearCanvas = new Button("CLEAR CANVAS");
+    protected Button btnColorRed = new Button();
+    protected Button btnColorBlack = new Button();
+    protected Button btnColorGreen = new Button();
+    protected Button btnColorPurple = new Button();
+    protected Button btnColorPink = new Button();
+    protected Button btnColorOrange  = new Button();
+    protected Button btnColorBlue = new Button();
+    protected Button btnColorYellow = new Button();
     protected TextArea chatSection = new TextArea();
     protected TextArea users = new TextArea();
+    //protected TextFlow users = new TextFlow();
     private final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     private TextField userName;
-    public int rnd, i = 0, count = 0;
+    protected int rnd, lock = 0, count = 0;
     private List<String> wordToGuessList;
+    protected Label countDown = new Label();
+    protected int interval = 0;
 
 
     @Override
@@ -147,7 +146,6 @@ public class ClientPaneFX extends Application {
     private void secondStage(MouseEvent mouseEvent) {
 
         wordToGuess = new Label();
-        //wordToGuess.setText(showWordToGuess());
         wordToGuess.getStyleClass().add("wordToGuess-label");
 
         users.getStyleClass().add("users-textarea");
@@ -170,15 +168,22 @@ public class ClientPaneFX extends Application {
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
 
-        scoreLabel.setText("Points: 0");
+        scoreLabel.setText("Your Points: 0");
         scoreLabel.getStyleClass().add("scoreLabel-style");
+
+        HBox timeSection = new HBox();
+        timeSection.getChildren().addAll(countDown,roundsLabel);
+        roundsLabel.getStyleClass().add("roundsLabel-style");
+        countDown.getStyleClass().add("roundsLabel-style");
+        timeSection.setAlignment(Pos.CENTER);
+        timeSection.setSpacing(10);
 
         VBox marginCanvas = new VBox();
         marginCanvas.getChildren().addAll(wordToGuess,canvas);
         marginCanvas.getStyleClass().add("marginCanvas-style");
 
         VBox leftPane = new VBox();
-        leftPane.getChildren().addAll(scoreLabel,roundsLabel);
+        leftPane.getChildren().addAll(scoreLabel,timeSection);
         leftPane.getStyleClass().add("leftPane-style");
         leftPane.setAlignment(Pos.CENTER);
 
@@ -288,40 +293,43 @@ public class ClientPaneFX extends Application {
         rootPane.setCenter(marginCanvas);
         rootPane.setRight(marginRightPane);
 
+        countDown.setText(String.valueOf(interval));
+
         getConnected();
+        enableDrawingForFirstUser();
         checkIfThisUserHasControl();
         updateRoundLabel();
-
-        roundsLabel.getStyleClass().add("roundsLabel-style");
 
         Scene secondStage = new Scene(rootPane);
         secondStage.getStylesheets().add("Style.css");
         rootPane.setStyle("-fx-background-color: #ECEFF1;");
-        //#263238 --> black theme
-        //#ECEFF1 --> white theme
 
         primaryStage.setScene(secondStage);
         ScrollBar scrollBar = (ScrollBar) chatSection.lookup(".scroll-bar:vertical");
         scrollBar.setDisable(true);
     }
-/*
-    private void validateGuess() {
 
+
+    private void enableDrawingForFirstUser(){
+        try {
+            if (client.serverInterface.returnCurrentUsers() == 1) {
+                btnClear.setVisible(true);
+                btnDraw.setVisible(true);
+                btnColorRed.setVisible(true);
+                btnColorBlack.setVisible(true);
+                btnColorPurple.setVisible(true);
+                btnColorGreen.setVisible(true);
+                btnColorBlue.setVisible(true);
+                btnColorOrange.setVisible(true);
+                btnColorPink.setVisible(true);
+                btnColorYellow.setVisible(true);
+                clearCanvas.setVisible(true);
+                canvas.setDisable(false);
+            }
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+        }
     }
-
-    private void chooseWinner() {
-
-    }
-
-    private int validateGuessGivePoints() {
-        validateGuess();
-        return 0;
-    }
-
-    private void pickPlayerToDraw() {
-
-    }
-*/
 
     public void updateRoundLabel(){
         try {
@@ -329,7 +337,7 @@ public class ClientPaneFX extends Application {
                 client.serverInterface.setTimerGame();
             }
             client.serverInterface.updateRound();
-            roundsLabel.setText("Round " + rnd + " of 3");
+            roundsLabel.setText("Round " + rnd + " of 5");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -403,12 +411,6 @@ public class ClientPaneFX extends Application {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        /*
-        if (btnDraw.isVisible()) {
-            Platform.runLater(() -> wordToGuess.setText(showWordToGuess(true)));
-        }else {
-            Platform.runLater(() -> wordToGuess.setText(showWordToGuess(false)));
-        }*/
     }
 
     private String showWordToGuess(boolean userType){
@@ -418,25 +420,28 @@ public class ClientPaneFX extends Application {
 
         try {
             wordToGuessList = Files.lines(path).collect(toList());
-            //count++;
             for (int i = 0; i < wordToGuessList.get(count).length(); i++) {
                 wrd = wordToGuessList.get(count);
                 wordToGuessString = wrd.charAt(0) + StringUtils.repeat("_", (i-1)) + wrd.charAt(wrd.length()-1);
             }
-
-            return (userType ? wordToGuessList.get(count)  : wordToGuessString);
-
+            return (userType ? wordToGuessList.get(count).toUpperCase()  : wordToGuessString.toUpperCase());
         }catch (Exception exception){
             return null;
         }
     }
 
-    private void validateGuessGivePoints() {
-        if (i == 0){
+    //POINTS:
+    //1 --> 50pts
+    //2 --> 40pts
+    //3 --> 35pts
+    //4,5,... --> 0pts
+    public void validateGuessGivePoints() {
+        if (lock == 0 && !btnDraw.isVisible()){
             if (chatField.getText().compareToIgnoreCase(Objects.requireNonNull(wordToGuessList.get(count))) == 0){
-                Users.setScore(Users.getScore() + 10);
-                scoreLabel.setText("Points: " + Users.getScore());
-                i = 1;
+                chatField.setText("word guessed");
+                Users.setScore(Users.getScore() + 50);
+                scoreLabel.setText("Your Points: " + Users.getScore());
+                lock = 1;
             }
         }
     }

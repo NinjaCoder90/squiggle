@@ -89,6 +89,10 @@
     -fx-background-color: #262626;
 }
 
+.users-textarea-active{
+    -fx-text-fill: #08e02d;
+}
+
 .chatSection-textarea{
     -fx-pref-height: 540;
     -fx-pref-width: 300;
@@ -238,7 +242,7 @@
     -fx-font-size: 18;
     -fx-text-fill: #fff;
     -fx-alignment: center;
-    -fx-padding: 0 0 -20 -25;
+    -fx-padding: 0 0 -20 5;
 }
 
 

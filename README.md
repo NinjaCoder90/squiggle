@@ -1,4 +1,4 @@
-![](images/) 
+![](src/main/resources/img.png) 
 
 # My Java Project
 

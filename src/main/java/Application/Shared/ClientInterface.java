@@ -1,4 +1,4 @@
-package Shared;
+package Application.Shared;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -7,7 +7,7 @@ public interface ClientInterface extends Remote {
 
     public void messageFromServer(String username, String message) throws RemoteException;
 
-    public void drawingFromServer(Double x1, Double y1, double x, double y ,String color) throws RemoteException;
+    public void drawingFromServer(double x1, double y1, double x, double y ,String color) throws RemoteException;
 
     public void clearFromServer(double x,double y, int n, int m, String color) throws RemoteException;
 
@@ -28,5 +28,13 @@ public interface ClientInterface extends Remote {
     public void showNextWordToGuessFromServer() throws RemoteException;
 
     public void updateIndexWordFromServer(int index) throws RemoteException;
+
+    public void setCountDownFromServer(int timeline) throws RemoteException;
+
+    public void pickPlayerToDrawFromServer() throws RemoteException;
+
+    public void disableForEveryoneFromServer(String[] userList) throws RemoteException;
+
+    public void giveControlToOtherUserFromServer(String userList, String[] currentUsers) throws RemoteException;
 
 }

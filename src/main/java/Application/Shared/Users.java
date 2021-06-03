@@ -1,4 +1,4 @@
-package Shared;
+package Application.Shared;
 
 /**
  * A class used by the server program to keep
@@ -27,6 +27,7 @@ public class Users {
     public String getName(){
         return name;
     }
+
     public ClientInterface getClient(){
         return client;
     }

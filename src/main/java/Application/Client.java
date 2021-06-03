@@ -1,9 +1,8 @@
 package Application;
 
-import Server.Server;
-import Shared.ClientInterface;
-import Shared.ServerInterface;
-import Shared.Users;
+import Application.Shared.ClientInterface;
+import Application.Shared.ServerInterface;
+import Application.Shared.Users;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -15,13 +14,12 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 import java.util.Optional;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
 
     private static final long serialVersionUID = 7468891722773409712L;
-    ClientPaneFX chatGUI ;
+    ClientPaneFX chatGUI;
     private final String clientServiceName;
     public final String name;
     public ServerInterface serverInterface;
@@ -32,9 +30,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         this.chatGUI = chatGUI;
         this.name = userName;
         this.clientServiceName = "ClientService_" + userName;
-    }
-    public String getName() {
-        return name;
     }
 
     public void startClient() throws RemoteException {
@@ -70,23 +65,58 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         }
     }
 
+    /**
+     * This method is used to append to the textArea the message send by the user,
+     * showing it to all the current users.
+     * @param username (String) variable holding the username of the user sending the message.
+     * @param message (String) variable holding the actual message to send.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void messageFromServer(String username,String message) throws RemoteException {
             chatGUI.chatSection.appendText(username + message + "\n");
     }
 
+    /**
+     * This method is used to send the drawing as an object to all the current users.
+     * From the user having the control to draw.
+     * @param x1 (double)
+     * @param y1 (double)
+     * @param x  (double)
+     * @param y  (double)
+     * @param color (String) variable holding the color.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
-    public void drawingFromServer(Double x1, Double y1, double x, double y, String color) throws RemoteException {
+    public void drawingFromServer(double x1, double y1, double x, double y, String color) throws RemoteException {
         chatGUI.gc.strokeLine(x1,y1,x,y);
         chatGUI.gc.setStroke(Color.valueOf(color));
     }
 
+    /**
+     * This method is used to send the input of the eraser to all the current users.
+     * @param x (double) coordinate x
+     * @param y (double) coordinate y
+     * @param n (int) coordinate n
+     * @param m (int) coordinate m
+     * @param color String variable holding the color.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void clearFromServer(double x, double y, int n, int m, String color) throws RemoteException {
         chatGUI.gc.fillOval(x,y,n,m);
         chatGUI.gc.setFill(Color.valueOf(color));
     }
 
+    /**
+     * This method is used to send to all the current users the clear Canvas.
+     * @param v coordinate V
+     * @param v1 coordinate V1
+     * @param v2 coordinate V2
+     * @param v3 coordinate V3
+     * @param color variable holding the color.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void ClearCanvasFromServer(int v, int v1, int v2, int v3, String color) throws RemoteException {
         chatGUI.gc.setFill(Color.WHITE);
@@ -98,63 +128,170 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         chatGUI.btnColorRed.setVisible(true);
     }
 
+    /**
+     * This method is used to updated the actual label in the GUI, with the updated round.
+     * Using {@link Platform#runLater(Runnable)} to update a GUI component from a non-GUI thread,
+     * in which it will be handled by the GUI thread as soon as possible.
+     * @param round holding the updated round from the server.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void sendRoundFromServer(int round) throws RemoteException {
-        Platform.runLater(() -> chatGUI.roundsLabel.setText("Round " + round + " of 3"));
+       Platform.runLater(() -> chatGUI.roundsLabel.setText("Round " + round + " of 5"));
     }
 
+    /**
+     * This method is used to update the round to the upcoming users joining the server.
+     * @param round used to pass the updated round to the GUI.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void updateRoundFromServer(int round) throws RemoteException {
         chatGUI.rnd = round;
     }
 
+    /**
+     * This method is used to reset to 0 the lock variable for the validateGuessGivePoints() method,
+     * in order to give back the possibility to the user to guess the word and earn points again.
+     * For further information see also: {@link ClientPaneFX#validateGuessGivePoints()} method.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void resetFromServer() throws RemoteException {
-        chatGUI.i = 0;
+        chatGUI.lock = 0;
     }
 
+    /**
+     * This method is used to check if the user has the control,
+     * ie have the draw button visible.
+     * For further information see also: {@link ClientPaneFX#checkIfThisUserHasControl()} method.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void checkFromServer() throws RemoteException {
-        //decrement count in ClientPaneFX, because, without decrementing the count variable
-        //the word to guess shown for the next user would be the next word from the list and not
-        //the current one.
-        //chatGUI.count--;
         chatGUI.checkIfThisUserHasControl();
     }
 
+    /**
+     * This method is used to increment the word to guess form the list,
+     * and then checking if the user has the control to give the complete word,
+     * otherwise give only the first and last letter.
+     * For further information see also: {@link ClientPaneFX#checkIfThisUserHasControl()} method.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void showNextWordToGuessFromServer() throws RemoteException {
         chatGUI.count++;
         chatGUI.checkIfThisUserHasControl();
     }
 
+    /**
+     * This method is used to update the index of the word to guess to the other users.
+     * @param index variable containing the index updated from the server.
+     * @throws RemoteException if faild to export the object.
+     */
     @Override
     public void updateIndexWordFromServer(int index) throws RemoteException {
         chatGUI.count = index;
     }
 
+    /**
+     * This method is used to set the countdown of each round to notify the
+     * user of how much time left has.
+     * @param timeline Integer variable used to update the countdown of the label of the GUI.
+     * @throws RemoteException if failed to export the object.
+     */
+    @Override
+    public void setCountDownFromServer(int timeline) throws RemoteException {
+        chatGUI.interval = timeline;
+        Platform.runLater(() -> chatGUI.countDown.setText(String.valueOf(timeline)));
+    }
+
+    /**
+     * This method is used to disable for everyone the control.
+     * @param currentUsers array of Strings containing the names of the current users in the server.
+     * @throws RemoteException if failed to export the object.
+     */
+    @Override
+    public void disableForEveryoneFromServer(String[] currentUsers) throws RemoteException{
+        enableDisableControl(false,true);
+    }
+
+    /**
+     * This method is used to pick a random player each round,
+     * and allow the control by enabling the buttons.
+     * @throws RemoteException if failed to export the object.
+     */
+    @Override
+    public void pickPlayerToDrawFromServer() throws RemoteException {
+        enableDisableControl(true,false);
+    }
+
+    /**
+     * Gives the control to draw to another user, if the current user
+     * who has the control leaves the game.
+     *
+     * @param user
+     * @param user
+     * @param currentUsers array containing the current users in the server.
+     * @throws RemoteException if failed to export the object.
+     */
+    @Override
+    public void giveControlToOtherUserFromServer(String user, String[] currentUsers) throws RemoteException {
+        if (chatGUI.btnDraw.isVisible()) {
+            System.out.println("line 242 Client.java");
+            for (String users : currentUsers) {
+                System.out.println("line 244 Client.java");
+                if(user.equals(users)){
+                    System.out.println("line 245 Client.java");
+                    enableDisableControl(true,false);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     *  Updates the leaderboard for all the current users in the server.
+     *  if the user from the currentUsers array equals to the username passed in the textField
+     *  we append "You" in front of the name for better readability in the leaderboard.
+     *  Else we append just the username.
+     * @param currentUsers array containing the current users in the server.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void updateUserListFromServer(String[] currentUsers) throws RemoteException {
-
-        if (name.equals(currentUsers[0])) {
-            chatGUI.btnClear.setVisible(true);
-            chatGUI.btnDraw.setVisible(true);
-            chatGUI.btnColorRed.setVisible(true);
-            chatGUI.btnColorBlack.setVisible(true);
-            chatGUI.btnColorPurple.setVisible(true);
-            chatGUI.btnColorGreen.setVisible(true);
-            chatGUI.btnColorBlue.setVisible(true);
-            chatGUI.btnColorOrange.setVisible(true);
-            chatGUI.btnColorPink.setVisible(true);
-            chatGUI.btnColorYellow.setVisible(true);
-            chatGUI.clearCanvas.setVisible(true);
-            chatGUI.canvas.setDisable(false);
-        }
-
         chatGUI.users.clear();
         chatGUI.users.setText("Leaderboard\n");
-       for (String user : currentUsers){
-           chatGUI.users.appendText(user + "\n");
-       }
+        for (String user : currentUsers){
+            if (user.equals(name)) {
+              chatGUI.users.appendText(user + " You" + "\n");
+            }else {
+              chatGUI.users.appendText(user + "\n");
+            }
+        }
+    }
+
+    /**
+     * This method is used to enable or disable the utilities button
+     * in order to allow or not the control of drawing to the users.
+     * @param enable if true enables the visibility else
+     *               disables the visibility of the buttons.
+     * @param disable if true disables the button
+     *                else enables the button.
+     */
+    private void enableDisableControl(boolean enable,boolean disable){
+        chatGUI.btnClear.setVisible(enable);
+        chatGUI.btnDraw.setVisible(enable);
+        chatGUI.btnColorRed.setVisible(enable);
+        chatGUI.btnColorBlack.setVisible(enable);
+        chatGUI.btnColorPurple.setVisible(enable);
+        chatGUI.btnColorGreen.setVisible(enable);
+        chatGUI.btnColorBlue.setVisible(enable);
+        chatGUI.btnColorOrange.setVisible(enable);
+        chatGUI.btnColorPink.setVisible(enable);
+        chatGUI.btnColorYellow.setVisible(enable);
+        chatGUI.clearCanvas.setVisible(enable);
+        chatGUI.canvas.setDisable(disable);
     }
 }

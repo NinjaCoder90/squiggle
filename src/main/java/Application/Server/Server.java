@@ -19,16 +19,14 @@ import java.util.function.Consumer;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
-    public static int round = 1;
-    int interval = 11;
+    private static int round = 1;
+    private int interval = 11;
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
     private static final CopyOnWriteArrayList<Users> usersList = new CopyOnWriteArrayList<>();
     private int indexWord = 0;
-    public int next;
-    int oldValue;
-    final Object lock = new Object();
-    int lock1 = 0;
+    private int next;
+    private int oldValue;
 
     /**
      * Constructor for the Server class inheriting the super() class
@@ -94,10 +92,17 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().sendRoundFromServer(round)));
     }
 
+    /**
+     * This method is
+     */
     private void resetIndexGivePointsMethod(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().resetFromServer()));
     }
 
+    /**
+     * This method is used to set the timer for each user in the server.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void setTimerGame() throws RemoteException {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
@@ -107,7 +112,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                     pickWinner();
                     System.out.println("arriva ");
 //                  round = 1;
-                    //clear list from users
 //                  usersList.clear();
                     scheduler.shutdownNow();
                 }else {
@@ -130,15 +134,26 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         scheduler.scheduleAtFixedRate(countdown, 0, 1, TimeUnit.SECONDS);
     }
 
-
+    /**
+     * This method is used to update the count down variable for each user
+     * in the server.
+     */
     public void updateCountDownVariable(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateCountDownVariableFromServer(interval)));
     }
 
+    /**
+     * This method is used to disable for each user the control,
+     * in this case we dont have to keep track of the previous user who had
+     * the control to draw.
+     * 
+     * For further information see also: {@link Application.Shared.ClientInterface#disableForEveryoneFromServer(String[])}
+     */
     private void disableForEveryone() {
         usersList.forEach(throwingConsumerWrapper(user ->
                 user.getClient().disableForEveryoneFromServer(getUserList())));
     }
+
 
     public void pickWinner(){
         Users users = new Users();
@@ -154,6 +169,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 //        }
     }
 
+    /**
+     * This method is used to update the word index for each of the users in the server.
+     * For further information see also: {@link Application.Shared.ClientInterface#updateIndexWordFromServer(int)}
+     * method.
+     *
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void updateIndexWord() throws RemoteException{
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateIndexWordFromServer(indexWord)));
@@ -205,6 +227,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     /**
      * This method is used to clear the canvas to the other users in the games session
      * by the user who has the control enabled.
+     * for further information see also: {@link Application.Shared.ClientInterface#ClearCanvasFromServer(int, int, int, int, String)}
+     * method.
      *
      * @param v (Integer) coordinate V
      * @param v1 (Integer) coordinate V1
@@ -218,6 +242,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().ClearCanvasFromServer(v, v1, v2, v3, color)));
     }
 
+    /**
+     * This method is used to update the leaderboard of each
+     * user in the server.
+     * for further information see also: {@link Application.Shared.ClientInterface#updateUserListFromServer(String[])}
+     */
     public void updateUserList() {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateUserListFromServer(getUserList())));
     }
@@ -239,14 +268,24 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      * This method is used to send this object to the client,
      * for each user to check if the current user has the control,
      * ie have the utilities buttons (Button draw, Button clear ecc...) visible.
+     *
+     * for further information see also: {@link ClientInterface#checkFromServer()}
      */
     public void checkIfThisUserHasControl(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().checkFromServer()));
     }
 
+    /**
+     * This method is used when a user leaves the game session,
+     * to give the control to the user at index 0 ie. the first user
+     * in the list, if the list is equal or greater than the
+     * usersList.size().
+     *
+     * for further information see also: {@link ClientInterface#giveControlToOtherUserFromServer()}
+     */
     private void giveControlToOtherUser(){
         try {
-            if (returnCurrentUsers() == 1) {
+            if (returnCurrentUsers() >= 1) {
                 usersList.get(0).getClient().giveControlToOtherUserFromServer();
             }
         } catch (RemoteException exception) {
@@ -254,6 +293,17 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
+    /**
+     * This method is called when a user leaves the game session.
+     * By looping through the usersList and comparing the username
+     * given as a parameter and the user from the list, then we just
+     * print out on the server the "username" left the game session plus the Date.
+     * Furthermore a check is being made to verify if the user has also
+     * the control in that case we give the control to someone else.
+     * @param userName (String) holding the username to check.
+     * @param hasControl (boolean) which hols if the user has the control.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void leaveGame(String userName, boolean hasControl) throws RemoteException {
         for(Users user : usersList){

@@ -130,6 +130,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         scheduler.scheduleAtFixedRate(countdown, 0, 1, TimeUnit.SECONDS);
     }
 
+    public int getInterval(){
+        return interval;
+    }
+
+    public int getRound() {
+        return round;
+    }
 
     public void updateCountDownVariable(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateCountDownVariableFromServer(interval)));

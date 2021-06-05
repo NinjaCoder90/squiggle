@@ -10,7 +10,7 @@ public interface ServerInterface extends Remote {
 
     public void registerUsers(String[] details) throws RemoteException;
 
-    public void leaveGame(String userName) throws RemoteException;
+    public void leaveGame(String userName, boolean hasControl) throws RemoteException;
 
     public void passIDentity(RemoteRef ref) throws RemoteException;
 
@@ -29,5 +29,7 @@ public interface ServerInterface extends Remote {
     public void setTimerGame() throws RemoteException;
 
     public void updateIndexWord() throws RemoteException;
+
+    public void updateCountDownVariable() throws RemoteException;
 
 }

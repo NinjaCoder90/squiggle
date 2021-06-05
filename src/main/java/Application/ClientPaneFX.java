@@ -1,29 +1,28 @@
 package Application;
 
+import Application.GameMechanic.Points;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.stage.Stage;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -32,25 +31,23 @@ import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
-import java.util.*;
-
-import Application.Shared.Users;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
 public class ClientPaneFX extends Application {
 
-    private static final long serialVersionUID = 1L;
-    private Label wordToGuess;
-    protected Label roundsLabel = new Label(),scoreLabel = new Label();
+    private Label wordToGuess = new Label();
+    protected Label roundsLabel = new Label();
+    public Label scoreLabel = new Label();
     protected final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
-    protected ToggleButton btnDraw = new ToggleButton();
+    public ToggleButton btnDraw = new ToggleButton();
     protected ToggleButton btnClear = new ToggleButton();
     protected String color = "black";
     private Double x1 = null, y1 = null;
     private Client client;
-    private Stage primaryStage;
+    public Stage primaryStage;
     protected Button clearCanvas = new Button("CLEAR CANVAS");
     protected Button btnColorRed = new Button();
     protected Button btnColorBlack = new Button();
@@ -62,15 +59,14 @@ public class ClientPaneFX extends Application {
     protected Button btnColorYellow = new Button();
     protected TextArea chatSection = new TextArea();
     protected TextArea users = new TextArea();
-    //protected TextFlow users = new TextFlow();
-    private final TextField chatField = new TextField();
+    public final TextField chatField = new TextField();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
-    private TextField userName;
-    protected int rnd, lock = 0, count = 0;
-    private List<String> wordToGuessList;
+    public TextField userName = new TextField();;
+    protected int rnd;
+    public int count = 0, lock = 0;
+    public List<String> wordToGuessList;
     protected Label countDown = new Label();
-    protected int interval = 0;
-
+    protected int interval;
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException{
@@ -93,7 +89,6 @@ public class ClientPaneFX extends Application {
         Label showErrorUsername = new Label("username already exist");
         showErrorUsername.setVisible(false);
 
-        userName = new TextField();
         userName.setPromptText("Enter your name");
         userName.getStyleClass().add("username-textField");
         userName.setOnKeyTyped(e -> start.setDisable(userName.getText().length() <= 0));
@@ -101,18 +96,6 @@ public class ClientPaneFX extends Application {
         start.getStyleClass().add("btn-start");
         start.setDisable(true);
         start.setOnMouseClicked(this::secondStage);
-        /*start.setOnMouseClicked(e-> {try {
-            client = new Client(this, userName.getText().replaceAll("\\W+","_"));
-            client.startClient();
-            if (client.serverInterface.checkIfUsernameExist(userName.getText())) {
-                start.setDisable(true);
-            }else {
-                System.out.println("hey");
-                //getConnected();
-            }
-        } catch (RemoteException exception) {
-            exception.printStackTrace();
-        }});*/
 
         VBox startSection = new VBox();
         startSection.getChildren().addAll(scrawlLogoView,howToPlay,userName,start,labelSystemInfo);
@@ -133,7 +116,7 @@ public class ClientPaneFX extends Application {
         primaryStage.setOnCloseRequest(e -> {
             if(client != null){
                 try {
-                    client.serverInterface.leaveGame(userName.getText());
+                    client.serverInterface.leaveGame(userName.getText(), btnDraw.isVisible());
                 } catch (RemoteException exception) {
                     exception.printStackTrace();
                 }
@@ -145,7 +128,6 @@ public class ClientPaneFX extends Application {
 
     private void secondStage(MouseEvent mouseEvent) {
 
-        wordToGuess = new Label();
         wordToGuess.getStyleClass().add("wordToGuess-label");
 
         users.getStyleClass().add("users-textarea");
@@ -293,12 +275,11 @@ public class ClientPaneFX extends Application {
         rootPane.setCenter(marginCanvas);
         rootPane.setRight(marginRightPane);
 
-        countDown.setText(String.valueOf(interval));
-
         getConnected();
         enableDrawingForFirstUser();
         checkIfThisUserHasControl();
         updateRoundLabel();
+        setCountDownLabel();
 
         Scene secondStage = new Scene(rootPane);
         secondStage.getStylesheets().add("Style.css");
@@ -309,6 +290,16 @@ public class ClientPaneFX extends Application {
         scrollBar.setDisable(true);
     }
 
+    private void setCountDownLabel(){
+        try {
+            if (client.serverInterface.returnCurrentUsers() != 1) {
+                client.serverInterface.updateCountDownVariable();
+                countDown.setText(String.valueOf(interval));
+            }
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+        }
+    }
 
     private void enableDrawingForFirstUser(){
         try {
@@ -331,7 +322,7 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    public void updateRoundLabel(){
+    private void updateRoundLabel(){
         try {
             if (client.serverInterface.returnCurrentUsers() == 1) {
                 client.serverInterface.setTimerGame();
@@ -430,21 +421,7 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    //POINTS:
-    //1 --> 50pts
-    //2 --> 40pts
-    //3 --> 35pts
-    //4,5,... --> 0pts
-    public void validateGuessGivePoints() {
-        if (lock == 0 && !btnDraw.isVisible()){
-            if (chatField.getText().compareToIgnoreCase(Objects.requireNonNull(wordToGuessList.get(count))) == 0){
-                chatField.setText("word guessed");
-                Users.setScore(Users.getScore() + 50);
-                scoreLabel.setText("Your Points: " + Users.getScore());
-                lock = 1;
-            }
-        }
-    }
+
 
     private void cursorDragged(MouseEvent mouseEvent){
        try{
@@ -470,8 +447,9 @@ public class ClientPaneFX extends Application {
     }
 
     private void sendMessage(KeyEvent keyEvent){
+        Points points = new Points(this);
         if (keyEvent.getCode() == KeyCode.ENTER){
-            validateGuessGivePoints();
+            points.validateGuessGivePoints();
             try {
                 client.serverInterface.updateChat(userName.getText(), chatField.getText());
             } catch (RemoteException e) {

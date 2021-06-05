@@ -15,8 +15,6 @@ public interface ClientInterface extends Remote {
 
     public void ClearCanvasFromServer(int v,int v1, int v2, int v3, String color) throws RemoteException;
 
-    public void enableDrawingFromSever() throws RemoteException;
-
     public void sendRoundFromServer(int round) throws RemoteException;
 
     public void updateRoundFromServer(int round) throws RemoteException;
@@ -35,6 +33,10 @@ public interface ClientInterface extends Remote {
 
     public void disableForEveryoneFromServer(String[] userList) throws RemoteException;
 
-    public void giveControlToOtherUserFromServer(String userList, String[] currentUsers) throws RemoteException;
+    public void giveControlToOtherUserFromServer() throws RemoteException;
+
+    public void updateCountDownVariableFromServer(int interval) throws RemoteException;
+
+    public void pickWinnerFromServer(String userName, int largest) throws RemoteException;
 
 }

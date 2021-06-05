@@ -2,18 +2,19 @@ package Application;
 
 import Application.Shared.ClientInterface;
 import Application.Shared.ServerInterface;
-import Application.Shared.Users;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.Optional;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
@@ -56,6 +57,14 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         System.out.println("Client Listen RMI Server is running...\n");
     }
 
+    /**
+     * This method is used to register the user joining the server,
+     * by passing to the server this.ref whic is the class object
+     * as a remote object reference.
+     * @param details (String) array containing the username,hostname
+     *                (which is "localhost") and the clientServiceName
+     *                (which is just a string containing the "ClientService_" + username)
+     */
     private void registerWithServer(String[] details) {
         try{
             serverInterface.passIDentity(this.ref);
@@ -123,11 +132,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         chatGUI.gc.fillRect(v,v1,v2,v3);
     }
 
-    @Override
-    public void enableDrawingFromSever() throws RemoteException {
-        chatGUI.btnColorRed.setVisible(true);
-    }
-
     /**
      * This method is used to updated the actual label in the GUI, with the updated round.
      * Using {@link Platform#runLater(Runnable)} to update a GUI component from a non-GUI thread,
@@ -153,7 +157,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     /**
      * This method is used to reset to 0 the lock variable for the validateGuessGivePoints() method,
      * in order to give back the possibility to the user to guess the word and earn points again.
-     * For further information see also: {@link ClientPaneFX#validateGuessGivePoints()} method.
+     * For further information see also: {@link Application.GameMechanic.Points#validateGuessGivePoints()} method.
      * @throws RemoteException if failed to export the object.
      */
     @Override
@@ -203,8 +207,33 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void setCountDownFromServer(int timeline) throws RemoteException {
-        chatGUI.interval = timeline;
         Platform.runLater(() -> chatGUI.countDown.setText(String.valueOf(timeline)));
+    }
+
+    @Override
+    public void updateCountDownVariableFromServer(int interval){
+        chatGUI.interval = interval;
+    }
+
+    /**
+     * This method is used to pick a winner the last round of the game session,
+     * uses an Alert to notify all the users who's the winner. By pressing OK
+     * on the alert the user will be prompted to the primaryStage which is the START.
+     * @param userName username of the winner.
+     * @param largest Points of the winner.
+     * @throws RemoteException if failed to export the object.
+     */
+    @Override
+    public void pickWinnerFromServer(String userName, int largest) throws RemoteException {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "The Winner is: " + userName +" Points: "+ largest);
+        Optional<ButtonType> another = alert.showAndWait();
+        if (another.isPresent() && another.get() == ButtonType.OK) {
+            try {
+                chatGUI.start(chatGUI.primaryStage);
+            } catch (FileNotFoundException exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -231,24 +260,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * Gives the control to draw to another user, if the current user
      * who has the control leaves the game.
      *
-     * @param user
-     * @param user
-     * @param currentUsers array containing the current users in the server.
      * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void giveControlToOtherUserFromServer(String user, String[] currentUsers) throws RemoteException {
-        if (chatGUI.btnDraw.isVisible()) {
-            System.out.println("line 242 Client.java");
-            for (String users : currentUsers) {
-                System.out.println("line 244 Client.java");
-                if(user.equals(users)){
-                    System.out.println("line 245 Client.java");
-                    enableDisableControl(true,false);
-                    break;
-                }
-            }
-        }
+    public void giveControlToOtherUserFromServer() throws RemoteException {
+        enableDisableControl(true,false);
     }
 
     /**

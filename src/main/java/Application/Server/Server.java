@@ -19,15 +19,16 @@ import java.util.function.Consumer;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
-    public static int round = 0;
-    private int interval = 21;
+    public static int round = 1;
+    int interval = 11;
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
     private static final CopyOnWriteArrayList<Users> usersList = new CopyOnWriteArrayList<>();
     private int indexWord = 0;
-    List<Integer> list = new ArrayList<>();
     public int next;
     int oldValue;
+    final Object lock = new Object();
+    int lock1 = 0;
 
     /**
      * Constructor for the Server class inheriting the super() class
@@ -47,6 +48,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         if (args.length == 2){
             hostName = args[0];
             serviceName = args[1];
+            System.out.println("args[0]: " + args[0] + "\nargs[1]: "+ args[1]);
         }
 
         try {
@@ -69,7 +71,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
-    public int returnCurrentUsers() throws RemoteException{
+    public int returnCurrentUsers(){
         return usersList.size();
     }
 
@@ -88,56 +90,68 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateRoundFromServer(round)));
     }
 
-    public static void sendRound(int round){
-        usersList.forEach(throwingConsumerWrapper(user ->  user.getClient().sendRoundFromServer(round)));
+    public void sendRound(int round){
+        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().sendRoundFromServer(round)));
     }
 
-    private static void resetIndexGivePointsMethod(){
+    private void resetIndexGivePointsMethod(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().resetFromServer()));
     }
 
     @Override
     public void setTimerGame() throws RemoteException {
-        ScheduledExecutorService timerGame = Executors.newScheduledThreadPool(5);
-        timerGame.scheduleAtFixedRate(() -> {
-            round++;
-            if (round == 5) {
-//                chooseWinner();
-//                round = 0;
-                timerGame.shutdownNow();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+        Runnable countdown = () -> {
+            if (interval == 0) {
+                if (round == 5) {
+                    pickWinner();
+                    System.out.println("arriva ");
+//                  round = 1;
+                    //clear list from users
+//                  usersList.clear();
+                    scheduler.shutdownNow();
+                }else {
+                    round++;
+                    sendRound(round);
+                    showNextWordToGuess();
+                    if (round > 1 && returnCurrentUsers() > 1) {
+                        pickPlayerToDraw();
+                    }
+                    checkIfThisUserHasControl();
+                    resetIndexGivePointsMethod();
+                }
+                interval = 11;
+            }else {
+                 interval--;
+                 usersList.forEach(throwingConsumerWrapper(
+                        user -> user.getClient().setCountDownFromServer(interval)));
             }
-            System.out.println("ciao sono anora ATTIVO");
-            //setCountDown();
-            sendRound(round);
-            showNextWordToGuess();
-            if (round > 1){
-                pickPlayerToDraw();
-            }
-            checkIfThisUserHasControl();
-            resetIndexGivePointsMethod();
-        }, 0, 20, TimeUnit.SECONDS);
+        };
+        scheduler.scheduleAtFixedRate(countdown, 0, 1, TimeUnit.SECONDS);
+    }
+
+
+    public void updateCountDownVariable(){
+        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateCountDownVariableFromServer(interval)));
     }
 
     private void disableForEveryone() {
-        String[] currentUsers = getUserList();
         usersList.forEach(throwingConsumerWrapper(user ->
-                user.getClient().disableForEveryoneFromServer(currentUsers)));
+                user.getClient().disableForEveryoneFromServer(getUserList())));
     }
 
-    private void chooseWinner(){
-//       usersList.forEach(throwingConsumerWrapper(user -> user ));
-    }
-
-    public void setCountDown(){
-        ScheduledExecutorService countDown = Executors.newSingleThreadScheduledExecutor();
-        countDown.scheduleAtFixedRate(() -> {
-            if (interval == 0) {
-                interval = 21;
-                countDown.shutdownNow();
-            }else {
-                usersList.forEach(throwingConsumerWrapper(user -> user.getClient().setCountDownFromServer(--interval)));
-            }
-        }, 0, 1, TimeUnit.SECONDS);
+    public void pickWinner(){
+        Users users = new Users();
+//        System.out.println("Username: Points: " + 50 + users.getList());
+        int largest = Collections.max(users.getList());
+        System.out.println("Username: Points: " + 50 + largest);
+//        for (Users user : usersList) {
+//            if (user.getScore() == 50){
+//                System.out.println("line 145");
+//                usersList.forEach(throwingConsumerWrapper(
+//                        userss -> userss.getClient().pickWinnerFromServer(user.getName(),50)));
+//            }
+//        }
     }
 
     @Override
@@ -145,6 +159,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateIndexWordFromServer(indexWord)));
     }
 
+    /**
+     * This method is used to
+     * 1) update the index of the word to show
+     * 2) Send to the other users the word.
+     * For further information see also: {@link ClientInterface#showNextWordToGuessFromServer()} method.
+     */
     private void showNextWordToGuess(){
         indexWord++;
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().showNextWordToGuessFromServer()));
@@ -182,14 +202,24 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
+    /**
+     * This method is used to clear the canvas to the other users in the games session
+     * by the user who has the control enabled.
+     *
+     * @param v (Integer) coordinate V
+     * @param v1 (Integer) coordinate V1
+     * @param v2 (Integer) coordinate V2
+     * @param v3 (Integer) coordinate V3
+     * @param color (String) variable holding the color.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void sendClearCanvas(int v, int v1, int v2, int v3, String color) throws RemoteException{
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().ClearCanvasFromServer(v, v1, v2, v3, color)));
     }
 
     public void updateUserList() {
-        String[] currentUsers = getUserList();
-        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateUserListFromServer(currentUsers)));
+        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateUserListFromServer(getUserList())));
     }
 
     /**
@@ -214,32 +244,41 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().checkFromServer()));
     }
 
-    private void giveControlToOtherUser(Users user,String username){
-//      usersList.forEach(throwingConsumerWrapper(users -> users.getClient().giveControlToOtherUserFromServer(currentUsers)));
-
+    private void giveControlToOtherUser(){
         try {
-            user.getClient().giveControlToOtherUserFromServer(
-                    Arrays.stream(getUserList()).findFirst().orElse(null),getUserList());
+            if (returnCurrentUsers() == 1) {
+                usersList.get(0).getClient().giveControlToOtherUserFromServer();
+            }
         } catch (RemoteException exception) {
             exception.printStackTrace();
         }
-
     }
 
     @Override
-    public void leaveGame(String userName) throws RemoteException {
+    public void leaveGame(String userName, boolean hasControl) throws RemoteException {
         for(Users user : usersList){
             if(user.getName().equals(userName)){
                 System.out.println(line + userName + " left the game session\n" + new Date(System.currentTimeMillis()) + "\n" + line);
                 usersList.remove(user);
+                if (hasControl){
+                    giveControlToOtherUser();
+                }
                 updateUserList();
-                giveControlToOtherUser(user,userName);
                 checkIfThisUserHasControl();
                 break;
             }
         }
     }
 
+    /**
+     * This method is used to update the game chat by sending for each user the
+     * messageFromServer() method.
+     *For further Information see also: {@link Application.Shared.ClientInterface#messageFromServer(String, String)}
+     * method.
+     * @param userName
+     * @param chatMessage
+     * @throws RemoteException
+     */
     @Override
     public void updateChat(String userName, String chatMessage) throws RemoteException {
         usersList.forEach(throwingConsumerWrapper(user ->
@@ -248,11 +287,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     @Override
     public boolean checkIfUsernameExist(String username) throws RemoteException{
-       /* for (String user : getUserList()) {
+        for (String user : getUserList()) {
             if (user.equals(username)) {
                 return true;
             }
-        }*/
+        }
         return false;
     }
 
@@ -280,6 +319,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             }
     }
 
+    /**
+     * This method is used to just print out on the server the remote
+     * reference of the remote object.
+     * @param ref represents the handle for a remote object.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void passIDentity(RemoteRef ref) throws RemoteException {
         try {

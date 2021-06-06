@@ -225,7 +225,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     @Override
     public void pickWinnerFromServer(String winner) throws RemoteException {
         Platform.runLater(() -> {
-            chatGUI.alert.setContentText("The Winner is -> " + winner + "\nWould you like to play again?");
+            chatGUI.alert.setTitle("GAME OVER");
+            chatGUI.alert.setHeaderText("THE WINNER IS..?");
+            chatGUI.alert.setContentText(winner + "\n\nWould you like to play again?");
             chatGUI.another = chatGUI.alert.showAndWait();
             if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.OK) {
                 try {

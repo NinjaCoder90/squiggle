@@ -92,6 +92,13 @@ public class ClientPaneFX extends Application {
         userName.getStyleClass().add("username-textField");
         userName.setOnKeyTyped(e -> start.setDisable(userName.getText().length() <= 0));
 
+//        getConnected();
+//
+//        if (client.serverInterface.returnCurrentUsers() > 1
+//                && client.serverInterface.checkIfUsernameExist(userName.getText())){
+//            showErrorUsername.setVisible(true);
+//
+//        }
         start.getStyleClass().add("btn-start");
         start.setDisable(true);
         start.setOnMouseClicked(this::secondStage);

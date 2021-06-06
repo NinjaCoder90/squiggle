@@ -38,4 +38,6 @@ public interface ClientInterface extends Remote {
     public void updateCountDownVariableFromServer(int interval) throws RemoteException;
 
     public void pickWinnerFromServer(String winner) throws RemoteException;
+
+    public void resetAFromServer() throws RemoteException;
 }

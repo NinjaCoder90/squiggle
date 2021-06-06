@@ -33,4 +33,6 @@ public interface ServerInterface extends Remote {
     public void updateCountDownVariable() throws RemoteException;
 
     public void getScoreAndUsername(int scoreUser, String nameUser) throws RemoteException;
+
+    public void resetA() throws RemoteException;
 }

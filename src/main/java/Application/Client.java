@@ -1,5 +1,7 @@
 package Application;
 
+import Application.GameMechanic.Points;
+import Application.Server.Server;
 import Application.Shared.ClientInterface;
 import Application.Shared.ServerInterface;
 import javafx.application.Platform;
@@ -17,7 +19,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Optional;
 
-public class Client extends UnicastRemoteObject implements ClientInterface {
+public class Client<a> extends UnicastRemoteObject implements ClientInterface {
 
     private static final long serialVersionUID = 7468891722773409712L;
     ClientPaneFX chatGUI;
@@ -25,6 +27,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     public final String name;
     public ServerInterface serverInterface;
     protected boolean connectionProblem = false;
+    public int a = 0;
 
     public Client(ClientPaneFX chatGUI,String userName) throws RemoteException{
         super();
@@ -163,6 +166,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     @Override
     public void resetFromServer() throws RemoteException {
         chatGUI.lock = 0;
+        chatGUI.a = 0;
     }
 
     /**
@@ -314,4 +318,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         chatGUI.clearCanvas.setVisible(enable);
         chatGUI.canvas.setDisable(disable);
     }
+
+    @Override
+    public void resetAFromServer() throws RemoteException {
+       chatGUI.a += 1;
+    }
+
 }

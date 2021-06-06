@@ -29,7 +29,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private int oldValue;
     public HashMap<String,Integer> map = new HashMap<>();
     public List<String> list = new ArrayList<>();
-
+    public static int b = 0;
     /**
      * Constructor for the Server class inheriting the super() class
      * used to create and export a new {@link UnicastRemoteObject} object using an anonymous port.
@@ -140,6 +140,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     private void resetIndexGivePointsMethod(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().resetFromServer()));
+    }
+
+    public void resetA(){
+        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().resetAFromServer()));
     }
 
     private void clearCanvas(){

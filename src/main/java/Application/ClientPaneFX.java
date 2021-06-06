@@ -66,6 +66,7 @@ public class ClientPaneFX extends Application {
     protected int interval;
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     Optional<ButtonType> another;
+    public int a = 0;
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException{

@@ -37,6 +37,5 @@ public interface ClientInterface extends Remote {
 
     public void updateCountDownVariableFromServer(int interval) throws RemoteException;
 
-    public void pickWinnerFromServer(String userName, int largest) throws RemoteException;
-
+    public void pickWinnerFromServer(String winner) throws RemoteException;
 }

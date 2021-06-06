@@ -14,16 +14,20 @@ public class Points {
         this.gameGui = gameGui;
     }
 
+    private void sendScoreAndUsername(){
+        try {
+            gameGui.client.serverInterface.getScoreAndUsername(Users.getScore(),gameGui.userName.getText());
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+        }
+    }
+
     public void validateGuessGivePoints() {
         if (gameGui.lock == 0 && !gameGui.btnDraw.isVisible()){
             if (gameGui.chatField.getText().compareToIgnoreCase(Objects.requireNonNull(gameGui.wordToGuessList.get(gameGui.count))) == 0){
                 gameGui.chatField.setText("word guessed");
                 Users.setScore(Users.getScore() + 50);
-                try {
-                    gameGui.client.serverInterface.getScoreAndUsername(Users.getScore(),gameGui.userName.getText());
-                } catch (RemoteException exception) {
-                    exception.printStackTrace();
-                }
+                sendScoreAndUsername();
                 gameGui.scoreLabel.setText("Your Points: " + Users.getScore());
                 gameGui.lock = 1;
             }

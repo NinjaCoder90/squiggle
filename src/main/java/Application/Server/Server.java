@@ -207,6 +207,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 user.getClient().disableForEveryoneFromServer(getUserList())));
     }
 
+    /**
+     * This method is used to get the score and the username,
+     * from the Points class, and then we put it into a {@link HashMap}.
+     *
+     * @param scoreUser the score of the user passed as a value to the HashMap.
+     * @param nameUser the username passed as a key to the HashMap.
+     */
     @Override
     public void getScoreAndUsername(int scoreUser, String nameUser){
             map.put(nameUser,scoreUser);
@@ -216,7 +223,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         map.entrySet().stream()
                 .sorted((k1,k2) -> -k1.getValue().compareTo(k2.getValue()))
                 .forEach(k -> list.add("Player: " + k.getKey() + " Points: " + k.getValue()));
-        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().pickWinnerFromServer(list.get(0))));
+        if (returnCurrentUsers() > 1){
+            usersList.forEach(throwingConsumerWrapper(user -> user.getClient().pickWinnerFromServer(list.get(0))));
+        }
     }
 
     /**

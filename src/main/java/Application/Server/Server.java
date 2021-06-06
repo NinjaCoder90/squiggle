@@ -1,5 +1,6 @@
 package Application.Server;
 
+import Application.GameMechanic.Points;
 import Application.Shared.ClientInterface;
 import Application.Shared.ServerInterface;
 import Application.Shared.Users;
@@ -25,8 +26,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private static final long serialVersionUID = 1L;
     private static final CopyOnWriteArrayList<Users> usersList = new CopyOnWriteArrayList<>();
     private int indexWord = 0;
-    private int next;
     private int oldValue;
+    public HashMap<String,Integer> map = new HashMap<>();
+    public List<String> list = new ArrayList<>();
 
     /**
      * Constructor for the Server class inheriting the super() class
@@ -38,16 +40,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     public static void main(String[] args) {
-
         startRMIRegistry();
         String hostName = "localhost";
         String serviceName = "distributedService";
 
-        if (args.length == 2){
-            hostName = args[0];
-            serviceName = args[1];
-            System.out.println("args[0]: " + args[0] + "\nargs[1]: "+ args[1]);
-        }
+//        if (args.length == 2){
+//            hostName = args[0];
+//            serviceName = args[1];
+//            System.out.println("args[0]: " + args[0] + "\nargs[1]: "+ args[1]);
+//        }
 
         try {
             ServerInterface hello = new Server();
@@ -59,7 +60,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
-    private static void startRMIRegistry() {
+    public static void startRMIRegistry() {
         try {
             java.rmi.registry.LocateRegistry.createRegistry(1099);
             System.out.println("The RMI Server is ready");
@@ -73,30 +74,80 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return usersList.size();
     }
 
+    /**
+     * This method is used to send the actual drawing to each of the
+     * users in the server by calling the drawingFromServer() method from the client.
+     *
+     * For further information see also: {@link ClientInterface#drawingFromServer(double, double, double, double, String)} method.
+     *
+     * @param x1 (double)
+     * @param y1 (double)
+     * @param x  (double)
+     * @param y  (double)
+     * @param color (String) variable holding the color.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
-    public void sendDrawing(Double x1, Double y1, double x, double y, String color) {
+    public void sendDrawing(Double x1, Double y1, double x, double y, String color) throws RemoteException{
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().drawingFromServer(x1, y1, x, y, color)));
     }
 
+    /** This method is used to erase part of the drawing in the canvas to 
+     * the other users in the games session by the user who has the control enabled.
+     *
+     * For further information see also: {@link ClientInterface#clearFromServer(double, double, int, int, String)} method.
+     *
+     * @param x (double) coordinate x
+     * @param y (double) coordinate y
+     * @param n (int) coordinate n
+     * @param m (int) coordinate m
+     * @param color String variable holding the color.
+     * @throws RemoteException if failed to export the object.
+     */
     @Override
     public void sendClear(double x, double y, int n, int m, String color) throws RemoteException {
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().clearFromServer(x, y, n, m, color)));
     }
 
+    /**
+     * This method is used to update for each of the users in the server the round
+     * by calling the updateRoundFromServer() method.
+     *
+     * For further information see also: {@link ClientInterface#updateRoundFromServer(int)} method.
+     */
     @Override
     public void updateRound(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().updateRoundFromServer(round)));
     }
 
+    /**
+     * This method is used to send to each of the users in the server the 
+     * updated round, by calling the sendRoundFromServer() method.
+     *
+     * For further information see also: {@link ClientInterface#sendRoundFromServer(int)} ()} method.
+     * 
+     * @param round
+     */
     public void sendRound(int round){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().sendRoundFromServer(round)));
     }
 
     /**
-     * This method is
+     * This method is used to reset to 0 the lock variable
+     * to each of the users in the server.
+     *
+     * For further information see also: {@link ClientInterface#resetFromServer()} method.
      */
     private void resetIndexGivePointsMethod(){
         usersList.forEach(throwingConsumerWrapper(user -> user.getClient().resetFromServer()));
+    }
+
+    private void clearCanvas(){
+        try {
+            sendClearCanvas(0, 0,  690,620,"white");
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**
@@ -108,11 +159,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
         Runnable countdown = () -> {
             if (interval == 0) {
+                clearCanvas();
                 if (round == 5) {
                     pickWinner();
-                    System.out.println("arriva ");
-//                  round = 1;
-//                  usersList.clear();
+                    round = 1;
+                    usersList.clear();
+                    map.clear();
+                    list.clear();
                     scheduler.shutdownNow();
                 }else {
                     round++;
@@ -154,19 +207,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 user.getClient().disableForEveryoneFromServer(getUserList())));
     }
 
+    @Override
+    public void getScoreAndUsername(int scoreUser, String nameUser){
+            map.put(nameUser,scoreUser);
+    }
 
     public void pickWinner(){
-        Users users = new Users();
-//        System.out.println("Username: Points: " + 50 + users.getList());
-        int largest = Collections.max(users.getList());
-        System.out.println("Username: Points: " + 50 + largest);
-//        for (Users user : usersList) {
-//            if (user.getScore() == 50){
-//                System.out.println("line 145");
-//                usersList.forEach(throwingConsumerWrapper(
-//                        userss -> userss.getClient().pickWinnerFromServer(user.getName(),50)));
-//            }
-//        }
+        map.entrySet().stream()
+                .sorted((k1,k2) -> -k1.getValue().compareTo(k2.getValue()))
+                .forEach(k -> list.add("Player: " + k.getKey() + " Points: " + k.getValue()));
+        usersList.forEach(throwingConsumerWrapper(user -> user.getClient().pickWinnerFromServer(list.get(0))));
     }
 
     /**
@@ -210,7 +260,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private void pickPlayerToDraw() {
         disableForEveryone();
         Random rand = new Random();
-        next = rand.nextInt(usersList.size());
+        int next = rand.nextInt(usersList.size());
 
         while (next == oldValue) {
             next = rand.nextInt(usersList.size());
@@ -325,9 +375,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      * messageFromServer() method.
      *For further Information see also: {@link Application.Shared.ClientInterface#messageFromServer(String, String)}
      * method.
-     * @param userName
-     * @param chatMessage
-     * @throws RemoteException
+     * @param userName (String) containing the username of the user.
+     * @param chatMessage (String) containing the message to be send.
+     * @throws RemoteException if failed to export the object.
      */
     @Override
     public void updateChat(String userName, String chatMessage) throws RemoteException {

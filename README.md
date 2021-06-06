@@ -1,4 +1,3 @@
-![](src/main/resources/img.png) 
 
 # Our Java Project
 

@@ -1,6 +1,7 @@
 package Application;
 
 import Application.GameMechanic.Points;
+import Application.Shared.Users;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -32,41 +33,39 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
 public class ClientPaneFX extends Application {
 
-    private Label wordToGuess = new Label();
-    protected Label roundsLabel = new Label();
+    private final Label wordToGuess = new Label();
+    protected Label roundsLabel = new Label(),countDown = new Label();;
     public Label scoreLabel = new Label();
+    private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     protected final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
     public ToggleButton btnDraw = new ToggleButton();
     protected ToggleButton btnClear = new ToggleButton();
-    protected String color = "black";
+//    protected String color = "black";
+    protected String color = "";
     private Double x1 = null, y1 = null;
-    private Client client;
-    public Stage primaryStage;
+    public Client client;
+    protected Stage primaryStage;
     protected Button clearCanvas = new Button("CLEAR CANVAS");
-    protected Button btnColorRed = new Button();
-    protected Button btnColorBlack = new Button();
-    protected Button btnColorGreen = new Button();
-    protected Button btnColorPurple = new Button();
-    protected Button btnColorPink = new Button();
-    protected Button btnColorOrange  = new Button();
-    protected Button btnColorBlue = new Button();
-    protected Button btnColorYellow = new Button();
-    protected TextArea chatSection = new TextArea();
-    protected TextArea users = new TextArea();
+    protected Button btnColorRed = new Button(), btnColorBlack = new Button(),btnColorGreen = new Button();
+    protected Button btnColorPurple = new Button(), btnColorPink = new Button(),btnColorOrange  = new Button();
+    protected Button btnColorBlue = new Button(), btnColorYellow = new Button();
+    protected TextArea chatSection = new TextArea(), users = new TextArea();
     public final TextField chatField = new TextField();
-    private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
-    public TextField userName = new TextField();;
+    public TextField userName = new TextField();
     protected int rnd;
     public int count = 0, lock = 0;
     public List<String> wordToGuessList;
-    protected Label countDown = new Label();
     protected int interval;
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    Optional<ButtonType> another;
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException{
@@ -420,8 +419,6 @@ public class ClientPaneFX extends Application {
             return null;
         }
     }
-
-
 
     private void cursorDragged(MouseEvent mouseEvent){
        try{

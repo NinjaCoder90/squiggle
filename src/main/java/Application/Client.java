@@ -59,7 +59,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
     /**
      * This method is used to register the user joining the server,
-     * by passing to the server this.ref whic is the class object
+     * by passing to the server this.ref which is the class object
      * as a remote object reference.
      * @param details (String) array containing the username,hostname
      *                (which is "localhost") and the clientServiceName
@@ -219,21 +219,25 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * This method is used to pick a winner the last round of the game session,
      * uses an Alert to notify all the users who's the winner. By pressing OK
      * on the alert the user will be prompted to the primaryStage which is the START.
-     * @param userName username of the winner.
-     * @param largest Points of the winner.
+     * @param winner winner.
      * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void pickWinnerFromServer(String userName, int largest) throws RemoteException {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "The Winner is: " + userName +" Points: "+ largest);
-        Optional<ButtonType> another = alert.showAndWait();
-        if (another.isPresent() && another.get() == ButtonType.OK) {
-            try {
-                chatGUI.start(chatGUI.primaryStage);
-            } catch (FileNotFoundException exception) {
-                exception.printStackTrace();
+    public void pickWinnerFromServer(String winner) throws RemoteException {
+        Platform.runLater(() -> {
+            chatGUI.alert.setContentText("The Winner is -> " + winner + "\nWould you like to play again?");
+            chatGUI.another = chatGUI.alert.showAndWait();
+            if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.OK) {
+                try {
+                    chatGUI.start(chatGUI.primaryStage);
+                } catch (FileNotFoundException exception) {
+                    exception.printStackTrace();
+                }
+            }else if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.CANCEL){
+                Platform.exit();
+                System.exit(0);
             }
-        }
+        });
     }
 
     /**

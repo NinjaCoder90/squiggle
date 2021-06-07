@@ -1,7 +1,6 @@
 package Application;
 
 import Application.GameMechanic.Points;
-import Application.Shared.Users;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -33,7 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -68,21 +66,36 @@ public class ClientPaneFX extends Application {
     Optional<ButtonType> another;
     public int a = 0;
 
+    /**
+     * This method is the start method of the Application class.
+     * At this primaryStage you are asked to enter your username.
+     *
+     * @param primaryStage Stage
+     */
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException{
+    public void start(Stage primaryStage){
 
         this.primaryStage = primaryStage;
 
         labelSystemInfo.getStyleClass().add("system-info");
 
-        ImageView scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
+        ImageView scrawlLogoView = null;
+        try {
+            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
+        } catch (FileNotFoundException exception) {
+            exception.printStackTrace();
+        }
         scrawlLogoView.getStyleClass().add("logo-View");
         scrawlLogoView.setPreserveRatio(true);
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "",ButtonType.OK);
+        Alert howToPlayAlert = new Alert(Alert.AlertType.INFORMATION);
+        howToPlayAlert.setContentText("How to Play. \nWhen its your turn to draw, you will have to " +
+                "draw a word shown to you in the top of the application in 80 seconds, alternatively when somebody " +
+                "else is drawing you have to type your guess into the chat to gain points, be quick, the earlier " +
+                "you guess a word the more points you get!");
         Hyperlink howToPlay = new Hyperlink("How to Play");
         howToPlay.getStyleClass().add("link-howToPlay");
-        howToPlay.setOnMouseClicked(e ->  alert.show());
+        howToPlay.setOnMouseClicked(e ->  howToPlayAlert.show());
 
         Button start = new Button("PLAY!");
 
@@ -119,6 +132,10 @@ public class ClientPaneFX extends Application {
         primaryStage.show();
     }
 
+    /**
+     * This method is used to notify the server that the user
+     * might want to leave the game session.
+     */
     private void onCloseStageEvent(){
         primaryStage.setOnCloseRequest(e -> {
             if(client != null){
@@ -133,6 +150,11 @@ public class ClientPaneFX extends Application {
         });
     }
 
+    /**
+     * This is the second Stage in which it will occur when the user
+     * presses the START button.
+     * @param mouseEvent
+     */
     private void secondStage(MouseEvent mouseEvent) {
 
         wordToGuess.getStyleClass().add("wordToGuess-label");
@@ -297,6 +319,13 @@ public class ClientPaneFX extends Application {
         scrollBar.setDisable(true);
     }
 
+    /**
+     * This method is used to set the countdown label to the updated
+     * variable if the user is not the first one joining the server.
+     * (This method is made because: The first user joining the server will be
+     * the one starting the timer so the other users will have to wait until next
+     * round to see the updated round and countdown)
+     */
     private void setCountDownLabel(){
         try {
             if (client.serverInterface.returnCurrentUsers() != 1) {
@@ -308,6 +337,11 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    /**
+     * This method is used to enable the control to draw to the first user
+     * only, because afterwards from the server it will randomly pick a user
+     * to draw.
+     */
     private void enableDrawingForFirstUser(){
         try {
             if (client.serverInterface.returnCurrentUsers() == 1) {
@@ -329,6 +363,12 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    /**
+     * This method is used to:
+     * 1) Initiate the timer if, is the first user.
+     * 2) If is not the first user it will set the
+     * current round.
+     */
     private void updateRoundLabel(){
         try {
             if (client.serverInterface.returnCurrentUsers() == 1) {
@@ -393,11 +433,15 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    //Then we know he has the control and we give him the full word.
-    // in the other case (for users that dont have the control)
-    // we give them the word with missing letters.
-    //if userType == true --> get wordsOnlyPlayerCanSee
-    //if userType == false --> get wordsEveryoneCanSee
+    /**
+     * This method is used to set the word to guess based on the
+     * type of user. First we check if the user has the control
+     * in this case we set the complete word, in the other case
+     * we give them the word with missing letters.
+
+     * if userType == true --> complete word.
+     * if userType == false --> word with missing letters.
+     */
     public void checkIfThisUserHasControl(){
         try {
             if (btnDraw.isVisible()) {
@@ -411,6 +455,12 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    /**
+     * This method is used to read from a .txt file and show the
+     * word based on the userType.
+     * @param userType boolean variable holding the type of user.
+     * @return String containing the word.
+     */
     private String showWordToGuess(boolean userType){
         Path path = Path.of("src/main/resources/WordsToGuess.txt");
         String wordToGuessString = "";
@@ -451,6 +501,13 @@ public class ClientPaneFX extends Application {
        }
     }
 
+    /**
+     * This method is used to send the message to the server, by
+     * getting the text of the username TextField which holds who is
+     * sending the message and the chatField which holds the actual message.
+     * Finally broadcast it to all the current users.
+     * @param keyEvent key pressed to send the message.
+     */
     private void sendMessage(KeyEvent keyEvent){
         Points points = new Points(this);
         if (keyEvent.getCode() == KeyCode.ENTER){
@@ -464,7 +521,14 @@ public class ClientPaneFX extends Application {
         }
     }
 
-    private void getConnected(){
+    /**
+     * This method is used to connect to the client,
+     * by passing th object of this class and the username of
+     * the user that wants to play.
+     * Note: using the regular expression "\W+" we avoid having
+     * malformed usernames (ex. spaces,non word characters).
+     */
+    private void getConnected() {
         try {
             client = new Client(this, userName.getText().replaceAll("\\W+","_"));
             client.startClient();

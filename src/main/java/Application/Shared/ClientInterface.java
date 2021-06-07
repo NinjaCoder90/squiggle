@@ -39,5 +39,5 @@ public interface ClientInterface extends Remote {
 
     public void pickWinnerFromServer(String winner) throws RemoteException;
 
-    public void resetAFromServer() throws RemoteException;
+    public void incrementPointsAmountFromServer() throws RemoteException;
 }

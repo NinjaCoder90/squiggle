@@ -1,7 +1,5 @@
 package Application;
 
-import Application.GameMechanic.Points;
-import Application.Server.Server;
 import Application.Shared.ClientInterface;
 import Application.Shared.ServerInterface;
 import javafx.application.Platform;
@@ -16,7 +14,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 import java.util.Optional;
 
 public class Client<a> extends UnicastRemoteObject implements ClientInterface {
@@ -27,7 +24,6 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
     public final String name;
     public ServerInterface serverInterface;
     protected boolean connectionProblem = false;
-    public int a = 0;
 
     public Client(ClientPaneFX chatGUI,String userName) throws RemoteException{
         super();
@@ -55,9 +51,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
             connectionProblem = true;
         }
         if(!connectionProblem){
-                registerWithServer(details);
+            registerWithServer(details);
+            System.out.println("Client Listen RMI Server is running...\n");
         }
-        System.out.println("Client Listen RMI Server is running...\n");
     }
 
     /**
@@ -82,10 +78,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * showing it to all the current users.
      * @param username (String) variable holding the username of the user sending the message.
      * @param message (String) variable holding the actual message to send.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void messageFromServer(String username,String message) throws RemoteException {
+    public void messageFromServer(String username,String message) {
             chatGUI.chatSection.appendText(username + message + "\n");
     }
 
@@ -97,10 +92,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * @param x  (double)
      * @param y  (double)
      * @param color (String) variable holding the color.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void drawingFromServer(double x1, double y1, double x, double y, String color) throws RemoteException {
+    public void drawingFromServer(double x1, double y1, double x, double y, String color) {
         chatGUI.gc.strokeLine(x1,y1,x,y);
         chatGUI.gc.setStroke(Color.valueOf(color));
     }
@@ -112,10 +106,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * @param n (int) coordinate n
      * @param m (int) coordinate m
      * @param color String variable holding the color.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void clearFromServer(double x, double y, int n, int m, String color) throws RemoteException {
+    public void clearFromServer(double x, double y, int n, int m, String color) {
         chatGUI.gc.fillOval(x,y,n,m);
         chatGUI.gc.setFill(Color.valueOf(color));
     }
@@ -127,10 +120,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * @param v2 coordinate V2
      * @param v3 coordinate V3
      * @param color variable holding the color.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void ClearCanvasFromServer(int v, int v1, int v2, int v3, String color) throws RemoteException {
+    public void ClearCanvasFromServer(int v, int v1, int v2, int v3, String color) {
         chatGUI.gc.setFill(Color.WHITE);
         chatGUI.gc.fillRect(v,v1,v2,v3);
     }
@@ -150,10 +142,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
     /**
      * This method is used to update the round to the upcoming users joining the server.
      * @param round used to pass the updated round to the GUI.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void updateRoundFromServer(int round) throws RemoteException {
+    public void updateRoundFromServer(int round) {
         chatGUI.rnd = round;
     }
 
@@ -161,10 +152,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * This method is used to reset to 0 the lock variable for the validateGuessGivePoints() method,
      * in order to give back the possibility to the user to guess the word and earn points again.
      * For further information see also: {@link Application.GameMechanic.Points#validateGuessGivePoints()} method.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void resetFromServer() throws RemoteException {
+    public void resetFromServer() {
         chatGUI.lock = 0;
         chatGUI.a = 0;
     }
@@ -173,10 +163,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * This method is used to check if the user has the control,
      * ie have the draw button visible.
      * For further information see also: {@link ClientPaneFX#checkIfThisUserHasControl()} method.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void checkFromServer() throws RemoteException {
+    public void checkFromServer() {
         chatGUI.checkIfThisUserHasControl();
     }
 
@@ -185,10 +174,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * and then checking if the user has the control to give the complete word,
      * otherwise give only the first and last letter.
      * For further information see also: {@link ClientPaneFX#checkIfThisUserHasControl()} method.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void showNextWordToGuessFromServer() throws RemoteException {
+    public void showNextWordToGuessFromServer() {
         chatGUI.count++;
         chatGUI.checkIfThisUserHasControl();
     }
@@ -196,10 +184,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
     /**
      * This method is used to update the index of the word to guess to the other users.
      * @param index variable containing the index updated from the server.
-     * @throws RemoteException if faild to export the object.
      */
     @Override
-    public void updateIndexWordFromServer(int index) throws RemoteException {
+    public void updateIndexWordFromServer(int index) {
         chatGUI.count = index;
     }
 
@@ -207,10 +194,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * This method is used to set the countdown of each round to notify the
      * user of how much time left has.
      * @param timeline Integer variable used to update the countdown of the label of the GUI.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void setCountDownFromServer(int timeline) throws RemoteException {
+    public void setCountDownFromServer(int timeline) {
         Platform.runLater(() -> chatGUI.countDown.setText(String.valueOf(timeline)));
     }
 
@@ -224,10 +210,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      * uses an Alert to notify all the users who's the winner. By pressing OK
      * on the alert the user will be prompted to the primaryStage which is the START.
      * @param winner winner.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void pickWinnerFromServer(String winner) throws RemoteException {
+    public void pickWinnerFromServer(String winner) {
         Platform.runLater(() -> {
             chatGUI.alert.setTitle("GAME OVER");
             chatGUI.alert.setHeaderText("THE WINNER IS..?");
@@ -249,31 +234,27 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
     /**
      * This method is used to disable for everyone the control.
      * @param currentUsers array of Strings containing the names of the current users in the server.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void disableForEveryoneFromServer(String[] currentUsers) throws RemoteException{
+    public void disableForEveryoneFromServer(String[] currentUsers) {
         enableDisableControl(false,true);
     }
 
     /**
      * This method is used to pick a random player each round,
      * and allow the control by enabling the buttons.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void pickPlayerToDrawFromServer() throws RemoteException {
+    public void pickPlayerToDrawFromServer() {
         enableDisableControl(true,false);
     }
 
     /**
      * Gives the control to draw to another user, if the current user
      * who has the control leaves the game.
-     *
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void giveControlToOtherUserFromServer() throws RemoteException {
+    public void giveControlToOtherUserFromServer() {
         enableDisableControl(true,false);
     }
 
@@ -283,10 +264,9 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
      *  we append "You" in front of the name for better readability in the leaderboard.
      *  Else we append just the username.
      * @param currentUsers array containing the current users in the server.
-     * @throws RemoteException if failed to export the object.
      */
     @Override
-    public void updateUserListFromServer(String[] currentUsers) throws RemoteException {
+    public void updateUserListFromServer(String[] currentUsers) {
         chatGUI.users.clear();
         chatGUI.users.setText("Leaderboard\n");
         for (String user : currentUsers){
@@ -322,7 +302,7 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
     }
 
     @Override
-    public void resetAFromServer() throws RemoteException {
+    public void incrementPointsAmountFromServer() {
        chatGUI.a += 1;
     }
 

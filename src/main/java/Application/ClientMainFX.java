@@ -1,4 +1,11 @@
 package Application;
 
-public class ClientMainFX {
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class ClientMainFX extends Application {
+    @Override
+    public void start(Stage stage) throws Exception {
+        ClientPaneFX.launch();
+    }
 }

@@ -16,7 +16,7 @@
 
 .link-howToPlay{
     -fx-font-size: 18;
-    -fx-text-fill: #fff;
+    -fx-text-fill: #262626;
 }
 
 .username-textField{
@@ -244,6 +244,4 @@
     -fx-alignment: center;
     -fx-padding: 0 0 -20 5;
 }
-
-
 

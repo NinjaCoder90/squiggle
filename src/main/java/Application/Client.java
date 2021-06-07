@@ -219,11 +219,7 @@ public class Client<a> extends UnicastRemoteObject implements ClientInterface {
             chatGUI.alert.setContentText(winner + "\n\nWould you like to play again?");
             chatGUI.another = chatGUI.alert.showAndWait();
             if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.OK) {
-                try {
-                    chatGUI.start(chatGUI.primaryStage);
-                } catch (FileNotFoundException exception) {
-                    exception.printStackTrace();
-                }
+                chatGUI.start(chatGUI.primaryStage);
             }else if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.CANCEL){
                 Platform.exit();
                 System.exit(0);

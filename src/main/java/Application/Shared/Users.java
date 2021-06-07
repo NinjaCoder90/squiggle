@@ -5,7 +5,6 @@ package Application.Shared;
  * details of connected clients ordered
  **/
 public class Users {
-
     public String name;
     public String overloadName;
     public int overloadScore;
@@ -50,9 +49,7 @@ public class Users {
     public String getName(){
         return name;
     }
-
     public ClientInterface getClient(){
         return client;
     }
-
 }

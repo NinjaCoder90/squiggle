@@ -11,7 +11,7 @@ public class Points {
 
     ClientPaneFX gameGui;
 
-    public Points(ClientPaneFX gameGui){
+    public Points(ClientPaneFX gameGui) {
         this.gameGui = gameGui;
     }
 

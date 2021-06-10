@@ -10,7 +10,7 @@ RMI creates a connection between Client, Shared and Server, so that a client can
 
 - The others gamers have the goal to guess the right word corresponding to the picture that they see.
   The Client's control of drawing and guessing switches every round.
-  The first one to guess will get 50 points; the second 40, and the third 35 points.
+  The first one to guess will get 49 points; the second 39, and the third 33 points.
 
 - The winner is the one who has accumulated more points at the end of the game.
 
@@ -18,6 +18,24 @@ RMI creates a connection between Client, Shared and Server, so that a client can
 ## This is how you use my Project
 
 There is a list of things to do:
+1) git clone https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129.git
+2) cd pp_202021_misterycrew_id36129
+3) mvn install
+4) cd Server
+5) java -jar target/Server-1.0-SNAPSHOT-jar-with-dependencies.jar
+6) cd ApplicationFX
+7) mvn javafx:run
+
+Now open another terminal and repeat step 6 and 7 to test the application
+(Since this is a distributed Version).
+
+REMEMBER: open the server and the ApplicationFX in different terminals
+and in the order in which are specified in the "list of things to do".
+
+P.s: To shut down the server hold Ctrl + C (please also make sure to 
+close all the ApplicationFX before the server).
+
+Enjoy the Game :)
 
 ## These are my dependencies
 

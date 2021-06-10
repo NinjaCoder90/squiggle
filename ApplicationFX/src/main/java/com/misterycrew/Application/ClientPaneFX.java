@@ -47,7 +47,7 @@ public class ClientPaneFX extends Application {
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
     public ToggleButton btnDraw = new ToggleButton();
     protected ToggleButton btnClear = new ToggleButton();
-    protected String color = "";
+    protected String color = "black";
     private Double x1 = null, y1 = null;
     public Client client;
     protected Stage primaryStage;
@@ -59,7 +59,8 @@ public class ClientPaneFX extends Application {
     public final TextField chatField = new TextField();
     public TextField userName = new TextField();
     protected int rnd;
-    public int count = 0, lock = 0;
+    public int count = 0;
+    private int lock = 0;
     public List<String> wordToGuessList;
     protected int interval;
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -67,6 +68,14 @@ public class ClientPaneFX extends Application {
     public int a = 0;
     public Button start = new Button("PLAY!");
     Alert alertToManyMembers = new Alert(Alert.AlertType.INFORMATION);
+
+    public int getLock() {
+        return lock;
+    }
+
+    public void setLock(int lock) {
+        this.lock = lock;
+    }
 
     /**
      * This method is the start method of the Application class.
@@ -104,21 +113,7 @@ public class ClientPaneFX extends Application {
         userName.setOnKeyTyped(e -> start.setDisable(userName.getText().length() == 0));
 
         start.setDisable(true);
-        start.setOnMousePressed(e -> {
-                try {
-                    getConnected();
-                    if (client.serverInterface.getMembers() >= client.serverInterface.getTotRounds()) {
-                        alertToManyMembers.setContentText("To many players, please wait until " +
-                                                            "someone lives the game.");
-                        alertToManyMembers.show();
-                        client.serverInterface.leaveGame(userName.getText(), btnDraw.isVisible());
-                    } else {
-                        secondStage(e);
-                    }
-                } catch (RemoteException exception) {
-                    exception.printStackTrace();
-                }
-        });
+        start.setOnMousePressed(this::checkIfToManyMembers);
         start.getStyleClass().add("btn-start");
 
         VBox startSection = new VBox();
@@ -324,6 +319,32 @@ public class ClientPaneFX extends Application {
     }
 
     /**
+     * This method is used in order to verify that the users
+     * currently in the game session are not grater than the rounds
+     * (!members > 5).
+     *
+     * Note: we use leaveGame method in this case just to make sure
+     * that the server doesnt register the user when the start button is pressed.
+     *
+     * @param mouseEvent input when the start button is pressed
+     */
+    private void checkIfToManyMembers(MouseEvent mouseEvent){
+        try {
+            getConnected();
+            if (client.serverInterface.getMembers() >= client.serverInterface.getTotRounds()) {
+                alertToManyMembers.setContentText("To many players, please wait until " +
+                        "someone lives the game.");
+                alertToManyMembers.show();
+                client.serverInterface.leaveGame(userName.getText(), btnDraw.isVisible());
+            } else {
+                secondStage(mouseEvent);
+            }
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    /**
      * This method is used to set the countdown label to the updated
      * variable if the user is not the first one joining the server.
      * (This method is made because: The first user joining the server will be
@@ -385,6 +406,12 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    /**
+     * This method is used to change the color of the pen,
+     * used to draw.
+     *
+     * @param event mouse input event
+     */
     public void processColorChange(ActionEvent event) {
         btnDraw.setSelected(true);
         if (event.getSource().equals(btnColorGreen)) {
@@ -405,6 +432,11 @@ public class ClientPaneFX extends Application {
             color = "Yellow";
     }
 
+    /**
+     * This method clears the canvas by applying the white color on the canvas.
+     *
+     * @param mouseEvent when the clear canvas button is pressed.
+     */
     private void clearCanvas(MouseEvent mouseEvent) {
         try {
             gc.setFill(Color.WHITE);
@@ -415,6 +447,11 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    /**
+     * This method is used to reset to null the x and y coordinates
+     * when the mouse event is released.
+     * @param mouseEvent on mouse released.
+     */
     private void cursorReleased(MouseEvent mouseEvent) {
         x1 = null;
         y1 = null;
@@ -543,6 +580,11 @@ public class ClientPaneFX extends Application {
         }
     }
 
+    /**
+     * This is the main method used to launch aur
+     * JavaFX Application.
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }

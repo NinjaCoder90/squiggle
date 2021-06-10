@@ -464,10 +464,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     /**
+     * This method is used to handle the exceptions thrown by
+     * the remote objects in a elegant way through lambdas used
+     * in this class.
      *
-     * @param throwingConsumer
-     * @param <T>
-     * @return
+     * @param throwingConsumer ThrowingConsumer is a functional interface that can be used to implement any generic
+     *                         block of code.
+     * @param <T> generic type
+     * @return (Consumer) is a functional interface; it takes an argument and returns nothing.
      */
     static <T> Consumer<T> throwingConsumerWrapper(ThrowingConsumer<T, Exception> throwingConsumer) {
         return i -> {

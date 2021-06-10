@@ -5,11 +5,11 @@ package com.misterycrew.Shared;
  * details of connected clients ordered
  **/
 public class Users {
-    public String name;
-    public String overloadName;
-    public int overloadScore;
-    public ClientInterface client;
-    public static int score;
+    private String name;
+    private String overloadName;
+    private int overloadScore;
+    private ClientInterface client;
+    private static int score;
 
     public Users(String name, ClientInterface client, int score){
         this.name = name;

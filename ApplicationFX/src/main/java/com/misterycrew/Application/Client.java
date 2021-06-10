@@ -160,7 +160,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void resetFromServer() {
-        chatGUI.lock = 0;
+        chatGUI.setLock(0);
         chatGUI.a = 0;
     }
 
@@ -303,7 +303,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     /**
-     *
+     * This method allows the Points class to know how many users
+     * are guessing, in order to differentiate the given points.
+     * By incrementing a variable in the same round so that the upcoming users will get
+     * less points.
      */
     @Override
     public void incrementPointsAmountFromServer() {

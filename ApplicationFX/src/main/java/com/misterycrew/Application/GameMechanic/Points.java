@@ -1,7 +1,6 @@
 package com.misterycrew.Application.GameMechanic;
 
 import com.misterycrew.Application.ClientPaneFX;
-import com.misterycrew.Shared.ClientInterface;
 import com.misterycrew.Shared.ServerInterface;
 import com.misterycrew.Shared.Users;
 
@@ -16,7 +15,7 @@ public class Points {
     ClientPaneFX gameGui;
 
     /**
-     * Costructor of the Points class.
+     * Constructor of the Points class.
      * @param gameGui object class of ClientPaneFX.
      */
     public Points(ClientPaneFX gameGui) {

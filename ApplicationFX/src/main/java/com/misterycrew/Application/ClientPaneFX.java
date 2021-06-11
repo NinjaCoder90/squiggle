@@ -69,13 +69,6 @@ public class ClientPaneFX extends Application {
     public Button start = new Button("PLAY!");
     Alert alertToManyMembers = new Alert(Alert.AlertType.INFORMATION);
 
-    public int getLock() {
-        return lock;
-    }
-
-    public void setLock(int lock) {
-        this.lock = lock;
-    }
 
     /**
      * This method is the start method of the Application class.
@@ -316,6 +309,23 @@ public class ClientPaneFX extends Application {
         primaryStage.setScene(secondStage);
         ScrollBar scrollBar = (ScrollBar) chatSection.lookup(".scroll-bar:vertical");
         scrollBar.setDisable(true);
+    }
+
+    /**
+     * Getter used to retrieve the lock state.
+     * @return (Integer) holding the state of the lock.
+     */
+    public int getLock() {
+        return lock;
+    }
+
+    /**
+     * Setter used to set the lock.
+     * @param lock (Integer) used to pass the changed value of
+     *             the lock variable.
+     */
+    public void setLock(int lock) {
+        this.lock = lock;
     }
 
     /**

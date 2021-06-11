@@ -17,14 +17,18 @@ RMI creates a connection between Client, Shared and Server, so that a client can
 
 ## This is how you use my Project
 
+NOTE: In order to run this project you will only need Java 15 or above.
+
 There is a list of things to do:
 1) git clone https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129.git
 2) cd pp_202021_misterycrew_id36129
-3) mvn install
+3) - Windows: mvnw.cmd clean install
+   - Linux/OS: ./mvnw clean install
 4) cd Server
 5) java -jar target/Server-1.0-SNAPSHOT-jar-with-dependencies.jar
 6) cd ApplicationFX
-7) mvn javafx:run
+7) - Windows: mvnw.cmd javafx:run
+   - Linux/OS: ./mvnw javafx:run
 
 Now open another terminal and repeat step 6 and 7 to test the application
 (Since this is a distributed Version).
@@ -40,7 +44,6 @@ Enjoy the Game :)
 ## These are my dependencies
 
 1. Java
-2. Maven
 
 # The contributors of this project are
 

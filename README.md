@@ -1,4 +1,8 @@
-# SCRAWL Game [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# Scrawl Game [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
+![Image of Scrawl game](images/Image-Game.png)
+
 
 ## Our Java Project
 

@@ -137,8 +137,7 @@ Enjoy the Game :)
 • How you used Git?
   
 > Mainly we used **Git** to better manage the different features of the project that we wanted to 
-  implement by creating branches and then discussing together which feature was most suited  
-  to get the job done correctly. Finally, we merged the branches into the master branch. 
+  implement by creating branches and then discussing together which feature was most suited to get the job done correctly. Finally, we merged the branches into the master branch. 
 
 • The main challenges you faced (at least one per member)?
 

@@ -161,6 +161,18 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     /**
+     * This method is used to send to every user in the server the
+     * clearChatFromServer() method.
+     *
+     * For further information see also: {@link ClientInterface#clearChatFromServer()} method.
+     */
+    public void clearChat(){
+        usersList.forEach(throwingConsumerWrapper(
+                user -> user.getClient().clearChatFromServer()
+        ));
+    }
+
+    /**
      * This method is used to set the timer for each user in the server,
      * and perform different actions each second per 80 seconds.
      */
@@ -172,6 +184,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 sendClearCanvas(0, 0, 690, 620, "white");
                 if (round == totRounds) {
                     pickWinner();
+                    clearChat();
                     round = 1;
                     usersList.clear();
                     map.clear();

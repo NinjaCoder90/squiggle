@@ -332,4 +332,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     public void incrementPointsAmountFromServer() {
         chatGUI.a += 1;
     }
+
+    /**
+     * This method is used to clear the chat section when the game ends.
+     */
+    @Override
+    public void clearChatFromServer() {
+        chatGUI.chatSection.clear();
+    }
 }

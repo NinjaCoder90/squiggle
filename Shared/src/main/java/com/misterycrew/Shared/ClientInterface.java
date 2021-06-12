@@ -40,4 +40,6 @@ public interface ClientInterface extends Remote {
     void pickWinnerFromServer(String winner) throws RemoteException;
 
     void incrementPointsAmountFromServer() throws RemoteException;
+
+    void clearChatFromServer() throws RemoteException;
 }

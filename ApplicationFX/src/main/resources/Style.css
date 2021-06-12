@@ -71,7 +71,7 @@
 .users-textarea{
     -fx-alignment: center;
     -fx-max-width: 270;
-    -fx-pref-height: 260;
+    -fx-pref-height: 240;
     -fx-background-color: #262626;
     -fx-control-inner-background: #262626;
     -fx-font-weight: bold;
@@ -242,6 +242,5 @@
     -fx-font-size: 18;
     -fx-text-fill: #fff;
     -fx-alignment: center;
-    -fx-padding: 0 0 -20 5;
 }
 

@@ -16,6 +16,7 @@ public class Points {
 
     /**
      * Constructor of the Points class.
+     *
      * @param gameGui object class of ClientPaneFX.
      */
     public Points(ClientPaneFX gameGui) {
@@ -27,9 +28,9 @@ public class Points {
      * username and the score of the user, in order to store it for
      * choosing the winner at the end of the game.
      */
-    private void sendScoreAndUsername(){
+    private void sendScoreAndUsername() {
         try {
-            gameGui.client.serverInterface.getScoreAndUsername(Users.getScore(),gameGui.userName.getText());
+            gameGui.client.serverInterface.getScoreAndUsername(Users.getScore(), gameGui.getUserName().getText());
         } catch (RemoteException exception) {
             exception.printStackTrace();
         }
@@ -39,10 +40,10 @@ public class Points {
      * This method is used to increment a variable
      * used to determine the amount of points that
      * the user might earn.
-     *
+     * <p>
      * For further information see also: {@link ServerInterface#incrementPointsAmount()}
      */
-    private void incrementPointsAmounts(){
+    private void incrementPointsAmounts() {
         try {
             gameGui.client.serverInterface.incrementPointsAmount();
         } catch (RemoteException e) {
@@ -55,18 +56,18 @@ public class Points {
      * points to the players (max.3) who guessed it.
      */
     public void validateGuessGivePoints() {
-        if (gameGui.getLock() == 0 && !gameGui.btnDraw.isVisible()){
-            if (gameGui.chatField.getText().compareToIgnoreCase(gameGui.wordToGuessList.get(gameGui.count)) == 0){
-                gameGui.chatField.setText("word guessed");
+        if (gameGui.getLock() == 0 && !gameGui.getBtnDraw().isVisible()) {
+            if (gameGui.getChatField().getText().compareToIgnoreCase(gameGui.getWordToGuessList().get(gameGui.count)) == 0) {
+                gameGui.getChatField().setText("word guessed");
                 if (gameGui.a == 0) {
                     Users.setScore(Users.getScore() + 49);
                 } else if (gameGui.a == 1) {
                     Users.setScore(Users.getScore() + 39);
-                } else if (gameGui.a == 2){
+                } else if (gameGui.a == 2) {
                     Users.setScore(Users.getScore() + 33);
                 }
                 sendScoreAndUsername();
-                gameGui.scoreLabel.setText("Your Points: " + Users.getScore());
+                gameGui.getScoreLabel().setText("Your Points: " + Users.getScore());
                 gameGui.setLock(1);
                 incrementPointsAmounts();
             }

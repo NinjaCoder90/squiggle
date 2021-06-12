@@ -41,11 +41,11 @@ public class ClientPaneFX extends Application {
 
     private final Label wordToGuess = new Label();
     protected Label roundsLabel = new Label(), countDown = new Label();
-    public Label scoreLabel = new Label();
+    protected Label scoreLabel = new Label();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     protected final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
-    public ToggleButton btnDraw = new ToggleButton();
+    protected ToggleButton btnDraw = new ToggleButton();
     protected ToggleButton btnClear = new ToggleButton();
     protected String color = "black";
     private Double x1 = null, y1 = null;
@@ -56,17 +56,17 @@ public class ClientPaneFX extends Application {
     protected Button btnColorPurple = new Button(), btnColorPink = new Button(), btnColorOrange = new Button();
     protected Button btnColorBlue = new Button(), btnColorYellow = new Button();
     protected TextArea chatSection = new TextArea(), users = new TextArea();
-    public final TextField chatField = new TextField();
-    public TextField userName = new TextField();
+    protected final TextField chatField = new TextField();
+    protected TextField userName = new TextField();
     protected int rnd;
     public int count = 0;
     private int lock = 0;
-    public List<String> wordToGuessList;
+    protected List<String> wordToGuessList;
     protected int interval;
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     Optional<ButtonType> another;
     public int a = 0;
-    public Button start = new Button("PLAY!");
+    private final Button start = new Button("PLAY!");
     Alert alertToManyMembers = new Alert(Alert.AlertType.INFORMATION);
 
 
@@ -81,11 +81,9 @@ public class ClientPaneFX extends Application {
 
         this.primaryStage = primaryStage;
 
-        labelSystemInfo.getStyleClass().add("system-info");
-
         ImageView scrawlLogoView = new ImageView();
         try {
-           scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
+            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
@@ -110,7 +108,7 @@ public class ClientPaneFX extends Application {
         start.getStyleClass().add("btn-start");
 
         VBox startSection = new VBox();
-        startSection.getChildren().addAll(scrawlLogoView, howToPlay, userName, start, labelSystemInfo);
+        startSection.getChildren().addAll(scrawlLogoView, howToPlay, userName, start);
         startSection.getStyleClass().add("startSection");
 
         Scene scene = new Scene(startSection);
@@ -172,11 +170,27 @@ public class ClientPaneFX extends Application {
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
 
+        ImageView imagePoints = new ImageView();
+        try {
+            imagePoints = new ImageView(new Image(new FileInputStream("src/main/resources/star.png"), 25, 25, false, false));
+        } catch (FileNotFoundException exception) {
+            exception.printStackTrace();
+        }
         scoreLabel.setText("Your Points: 0");
         scoreLabel.getStyleClass().add("scoreLabel-style");
+        HBox pointsSection = new HBox();
+        pointsSection.getChildren().addAll(imagePoints, scoreLabel);
+        pointsSection.setAlignment(Pos.CENTER);
+        pointsSection.setSpacing(26);
 
+        ImageView imageTime = new ImageView();
+        try {
+            imageTime = new ImageView(new Image(new FileInputStream("src/main/resources/deadline.png"), 25, 25, false, false));
+        } catch (FileNotFoundException exception) {
+            exception.printStackTrace();
+        }
         HBox timeSection = new HBox();
-        timeSection.getChildren().addAll(countDown, roundsLabel);
+        timeSection.getChildren().addAll(imageTime, countDown, roundsLabel);
         roundsLabel.getStyleClass().add("roundsLabel-style");
         countDown.getStyleClass().add("roundsLabel-style");
         timeSection.setAlignment(Pos.CENTER);
@@ -187,7 +201,7 @@ public class ClientPaneFX extends Application {
         marginCanvas.getStyleClass().add("marginCanvas-style");
 
         VBox leftPane = new VBox();
-        leftPane.getChildren().addAll(scoreLabel, timeSection);
+        leftPane.getChildren().addAll(pointsSection, timeSection);
         leftPane.getStyleClass().add("leftPane-style");
         leftPane.setAlignment(Pos.CENTER);
 
@@ -312,7 +326,54 @@ public class ClientPaneFX extends Application {
     }
 
     /**
+     * Getter used to retrieve the List of Strings used to show
+     * the words to guess.
+     *
+     * @return (List < String >) holding the list with the words to be guessed.
+     */
+    public List<String> getWordToGuessList() {
+        return wordToGuessList;
+    }
+
+    /**
+     * Getter used to retrieve the Username.
+     *
+     * @return (ToggleButton) holding the username of the user.
+     */
+    public TextField getUserName() {
+        return userName;
+    }
+
+    /**
+     * Getter used to retrieve the TextField used to write the message.
+     *
+     * @return (TextField) holding the message to be send.
+     */
+    public TextField getChatField() {
+        return chatField;
+    }
+
+    /**
+     * Getter used to retrieve the Button used to draw.
+     *
+     * @return (ToggleButton).
+     */
+    public ToggleButton getBtnDraw() {
+        return btnDraw;
+    }
+
+    /**
+     * Getter used to retrieve the score Label.
+     *
+     * @return (Label) holding the score.
+     */
+    public Label getScoreLabel() {
+        return scoreLabel;
+    }
+
+    /**
      * Getter used to retrieve the lock state.
+     *
      * @return (Integer) holding the state of the lock.
      */
     public int getLock() {
@@ -321,6 +382,7 @@ public class ClientPaneFX extends Application {
 
     /**
      * Setter used to set the lock.
+     *
      * @param lock (Integer) used to pass the changed value of
      *             the lock variable.
      */
@@ -332,13 +394,13 @@ public class ClientPaneFX extends Application {
      * This method is used in order to verify that the users
      * currently in the game session are not grater than the rounds
      * (!members > 5).
-     *
+     * <p>
      * Note: we use leaveGame method in this case just to make sure
      * that the server doesnt register the user when the start button is pressed.
      *
      * @param mouseEvent input when the start button is pressed
      */
-    private void checkIfToManyMembers(MouseEvent mouseEvent){
+    private void checkIfToManyMembers(MouseEvent mouseEvent) {
         try {
             getConnected();
             if (client.serverInterface.getMembers() >= client.serverInterface.getTotRounds()) {
@@ -460,6 +522,7 @@ public class ClientPaneFX extends Application {
     /**
      * This method is used to reset to null the x and y coordinates
      * when the mouse event is released.
+     *
      * @param mouseEvent on mouse released.
      */
     private void cursorReleased(MouseEvent mouseEvent) {
@@ -593,6 +656,7 @@ public class ClientPaneFX extends Application {
     /**
      * This is the main method used to launch aur
      * JavaFX Application.
+     *
      * @param args
      */
     public static void main(String[] args) {

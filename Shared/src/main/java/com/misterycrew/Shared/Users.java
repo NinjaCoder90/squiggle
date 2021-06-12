@@ -11,13 +11,13 @@ public class Users {
     private ClientInterface client;
     private static int score;
 
-    public Users(String name, ClientInterface client, int score){
+    public Users(String name, ClientInterface client, int score) {
         this.name = name;
         this.client = client;
         Users.score = score;
     }
 
-    public Users(String name, int score){
+    public Users(String name, int score) {
         this.overloadName = name;
         this.overloadScore = score;
     }
@@ -46,10 +46,11 @@ public class Users {
         Users.score = score;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
-    public ClientInterface getClient(){
+
+    public ClientInterface getClient() {
         return client;
     }
 }

@@ -83,20 +83,20 @@ public class ClientPaneFX extends Application {
 
         ImageView scrawlLogoView = new ImageView();
         try {
-            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png")));
+            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png"),500,150,false,false));
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
         scrawlLogoView.getStyleClass().add("logo-View");
-        scrawlLogoView.setPreserveRatio(true);
 
         Alert howToPlayAlert = new Alert(Alert.AlertType.INFORMATION);
         howToPlayAlert.setContentText("How to Play. \nWhen its your turn to draw, you will have to " +
                 "draw a word shown to you in the top of the application in 80 seconds, alternatively when somebody " +
                 "else is drawing you have to type your guess into the chat to gain points, be quick, the earlier " +
                 "you guess a word the more points you get!");
-        Hyperlink howToPlay = new Hyperlink("How to Play");
-        howToPlay.getStyleClass().add("link-howToPlay");
+
+        Button howToPlay = new Button("HOW TO PLAY");
+        howToPlay.getStyleClass().add("button-howToPlay");
         howToPlay.setOnMouseClicked(e -> howToPlayAlert.show());
 
         userName.setPromptText("Enter your name");
@@ -107,8 +107,13 @@ public class ClientPaneFX extends Application {
         start.setOnMousePressed(this::checkIfToManyMembers);
         start.getStyleClass().add("btn-start");
 
+        VBox startBox = new VBox();
+        startBox.getChildren().addAll(howToPlay, userName, start);
+        startBox.setAlignment(Pos.CENTER);
+        startBox.setSpacing(11);
+
         VBox startSection = new VBox();
-        startSection.getChildren().addAll(scrawlLogoView, howToPlay, userName, start);
+        startSection.getChildren().addAll(scrawlLogoView, startBox);
         startSection.getStyleClass().add("startSection");
 
         Scene scene = new Scene(startSection);

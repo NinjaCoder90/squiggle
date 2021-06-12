@@ -14,9 +14,16 @@
     -fx-fit-to-height: 355px;
 }
 
-.link-howToPlay{
+.button-howToPlay{
     -fx-font-size: 18;
-    -fx-text-fill: #262626;
+    -fx-font-weight: bold;
+    -fx-background-color: #cddafd;
+    -fx-text-fill: #3d5a80;
+}
+
+.button-howToPlay:hover{
+    -fx-background-color: #587D71;
+    -fx-text-fill: #fff;
 }
 
 .username-textField{
@@ -52,7 +59,7 @@
 }
 
 .startSection{
-    -fx-spacing: 10;
+    -fx-spacing: 70;
     -fx-pref-height: 700;
     -fx-pref-width: 1350;
     -fx-alignment: center;

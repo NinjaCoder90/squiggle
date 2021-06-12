@@ -31,60 +31,60 @@ In any OS, to invoke your local Maven installation instead of the wrapper, repla
 ``mvnw.cmd`` or ``./mvnw`` with ``mvn``.
 
 To check your Java version, run:
-````
+``
 $ java --version
-````
+``
 
 **Here is a list of things to do:**
 
   - To clone the **repo**
 
-    ````
+    ``
      $ git clone https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129.git
-    ````
+    ``
     
 
   - To access the **repo**
 
-    ````
+    ``
     $ cd pp_202021_misterycrew_id36129
-    ````
+    ``
     
 
   - To **compile**, **package** and **install**
 
-    ````
+    ``
     $ mvnw.cmd install
-    ````
+    ``
     
 
   - To access the **Server** folder
 
-    ````
+    ``
     $ cd Server
-    ````
+    ``
     
 
   - To execute the **Server**
 
-    ````
+    ``
     $ java -jar target/Server-1.0-SNAPSHOT-jar-with-dependencies.jar
-    ````
+    ``
 
 **New terminal session**
 
   - To access the **repo**
 
-    ````
+    ``
     $ cd pp_202021_misterycrew_id36129
-    ````
+    ``
     
 
   - To execute the **javafx** Application  
 
-    ````
+    ``
     $ mvnw.cmd -pl ApplicationFX javafx:run
-    ````
+    ``
     
 Now open another terminal and repeat step 6(access the **repo**) and 7(execute **javafx**) to test the application
 (Since this is a distributed Version).
@@ -99,16 +99,16 @@ close all the ApplicationFX before the server).
 
 - To generate the **java documentation**, run:
 
-  ````
+  ``
   $ mvnw.cmd javadoc:javadoc
-  ````
+  ``
 
 
 - To **clean** the built files, run:
 
-  ````
+  ``
   $ mvnw.cmd clean
-  ````
+  ``
 
 Enjoy the Game :)
 

@@ -131,7 +131,7 @@ Enjoy the Game :)
 
 > **Oussama Driouache:** 
   First I started searching how could we communicate between different JVM, then I have started to
-  develop simple chat applications. 
+  develop it. Afterwards I started building up the javafx layout with the different panes. 
 
 • How you used Git?
   
@@ -147,6 +147,10 @@ Enjoy the Game :)
   architecture. Another challenge that I have faced was setting up maven,
   since this is a distributed version having the server, and the Application javafx we had to create
   submodules with a parent maven project with which each one of the modules having his own pom.xml file. Apart from this the project was really challenging and at the same time fun to develop.
+
+# Issues tracking 
+
+Pull requests are welcome. For major changes, please open an [issue](https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129/-/issues) first to discuss what you would like to change.
 
 # The contributors of this project are
 

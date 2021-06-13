@@ -34,6 +34,10 @@ public class ClientPaneGameOverFX {
         winners.setText(winner.toUpperCase());
         winners.getStyleClass().add("winner-Label");
 
+        VBox winnerLabelBox = new VBox();
+        winnerLabelBox.getChildren().addAll(theWinnerIs,winners);
+        winnerLabelBox.setSpacing(9);
+
         Button exit = new Button("EXIT");
         exit.getStyleClass().add("exit-Button");
         exit.setOnMousePressed(e -> {
@@ -50,9 +54,10 @@ public class ClientPaneGameOverFX {
         tryAgainExit.setAlignment(Pos.CENTER);
         tryAgainExit.setSpacing(15);
 
-        VBox gameOverSection = new VBox(imageGameOver,theWinnerIs,winners,tryAgainExit);
+        VBox gameOverSection = new VBox(imageGameOver,winnerLabelBox,tryAgainExit);
         gameOverSection.setAlignment(Pos.CENTER);
         gameOverSection.setSpacing(30);
+        gameOverSection.setStyle("-fx-background-color: #ECEFF1;");
 
         Scene gameOverScene = new Scene(gameOverSection,1388,695);
         gameOverScene.getStylesheets().add("Style.css");

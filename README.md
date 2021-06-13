@@ -144,7 +144,7 @@ Enjoy the Game :)
   like assigning points, worked on finding bugs and errors during the implementation and helped
   fixing them.
 
-• How you used Git?
+• How did you use Git?
   
 > Mainly we used **Git** to better manage the different features of the project that we wanted to 
   implement by creating branches and then discussing together which feature was most suited to get the job done correctly. Finally, we merged the branches into the master branch. 

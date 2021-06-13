@@ -268,7 +268,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public void pickWinner() {
         map.entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .forEachOrdered(k -> list.add(k.getKey() + " with " + k.getValue()+ " points."));
+                .forEachOrdered(k -> list.add(k.getKey() + " with " + k.getValue()+ " points"));
         if (returnCurrentUsers() > 1) {
             usersList.forEach(throwingConsumerWrapper(user -> user.getClient().pickWinnerFromServer(list.get(0))));
         }

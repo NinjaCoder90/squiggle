@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
  * This class is used to assign
  * and keep trace of the points.
  */
-public class Points {
+public class Points{
 
     ClientPaneFX gameGui;
 

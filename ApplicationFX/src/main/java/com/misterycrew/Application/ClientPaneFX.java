@@ -62,8 +62,6 @@ public class ClientPaneFX extends Application {
     private int lock = 0;
     protected List<String> wordToGuessList;
     protected int interval;
-//    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-    Optional<ButtonType> another;
     public int a = 0;
     private final Button start = new Button("PLAY!");
     Alert alertToManyMembers = new Alert(Alert.AlertType.INFORMATION);
@@ -130,7 +128,7 @@ public class ClientPaneFX extends Application {
      * This method is used to notify the server that the user
      * might want to leave the game session.
      */
-    private void onCloseStageEvent() {
+    void onCloseStageEvent() {
         primaryStage.setOnCloseRequest(e -> {
             if (client != null) {
                 try {

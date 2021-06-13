@@ -154,7 +154,8 @@ Enjoy the Game :)
 
 # Issues tracking 
 
-Pull requests are welcome. For major changes, please open an [issue](https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129/-/issues) first to discuss what you would like to change.
+Pull requests are welcome. For major changes, please open an [issue](https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129/-/issues) first to discuss what you would like to change
+or which bug/issue you encountered.
 
 # The contributors of this project are
 

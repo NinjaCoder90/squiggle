@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class ClientPaneGameOverFX{
+public class ClientPaneGameOverFX {
 
     public void startGameOverPane(Stage primaryStage, String winner) {
 
@@ -27,17 +27,16 @@ public class ClientPaneGameOverFX{
             exception.printStackTrace();
         }
         Label theWinnerIs = new Label();
-        theWinnerIs.setText("THE WINNER IS?");
+        theWinnerIs.setText("CONGRATULATIONS TO THE WINNER");
         theWinnerIs.getStyleClass().add("winner-Label");
 
         Label winners = new Label();
-        winners.setText("CONGRATULATIONS TO " + winner.toUpperCase());
+        winners.setText(winner.toUpperCase());
         winners.getStyleClass().add("winner-Label");
 
         Button exit = new Button("EXIT");
         exit.getStyleClass().add("exit-Button");
         exit.setOnMousePressed(e -> {
-//            mainFX.
             Platform.exit();
             System.exit(0);
         });

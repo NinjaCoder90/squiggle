@@ -3,12 +3,6 @@
     -fx-opacity: 0;
 }
 
-.system-info{
-    -fx-font-family: 'JetBrains Mono NL';
-    -fx-font-size: 14;
-    -fx-text-fill: #212121;
-}
-
 .logo-View{
     -fx-fit-to-width: 300px;
     -fx-fit-to-height: 355px;

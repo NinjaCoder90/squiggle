@@ -228,8 +228,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
     /**
      * This method is used to pick a winner the last round of the game session,
-     * uses an Alert to notify all the users who's the winner. By pressing OK
-     * on the alert the user will be prompted to the primaryStage which is the START.
+     * by invoking the ClientPaneGameOverFX which then notify all the users who's the winner.
+     * By pressing the "TRY AGAIN" button the user will be prompted to the primaryStage which is the START,
+     * otherwise it will exit the game.
      *
      * @param winner winner.
      */

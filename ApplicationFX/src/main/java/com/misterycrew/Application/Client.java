@@ -19,7 +19,7 @@ import java.util.Optional;
 public class Client extends UnicastRemoteObject implements ClientInterface {
 
     private static final long serialVersionUID = 7468891722773409712L;
-    ClientPaneFX chatGUI;
+    ClientPaneFX gameGUI;
     private final String clientServiceName;
     private final String name;
     public ServerInterface serverInterface;
@@ -28,13 +28,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     /**
      * Constructor.
      *
-     * @param chatGUI  object of the ClientPaneFX class.
+     * @param gameGUI  object of the ClientPaneFX class.
      * @param userName holding the username of the user.
      * @throws RemoteException if failed to export the object.
      */
-    public Client(ClientPaneFX chatGUI, String userName) throws RemoteException {
+    public Client(ClientPaneFX gameGUI, String userName) throws RemoteException {
         super();
-        this.chatGUI = chatGUI;
+        this.gameGUI = gameGUI;
         this.name = userName;
         this.clientServiceName = "ClientService_" + userName;
     }
@@ -95,7 +95,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void messageFromServer(String username, String message) {
-        chatGUI.chatSection.appendText(username + message + "\n");
+        gameGUI.chatSection.appendText(username + message + "\n");
     }
 
     /**
@@ -110,8 +110,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void drawingFromServer(double x1, double y1, double x, double y, String color) {
-        chatGUI.gc.strokeLine(x1, y1, x, y);
-        chatGUI.gc.setStroke(Color.valueOf(color));
+        gameGUI.gc.strokeLine(x1, y1, x, y);
+        gameGUI.gc.setStroke(Color.valueOf(color));
     }
 
     /**
@@ -125,8 +125,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void clearFromServer(double x, double y, int n, int m, String color) {
-        chatGUI.gc.fillOval(x, y, n, m);
-        chatGUI.gc.setFill(Color.valueOf(color));
+        gameGUI.gc.fillOval(x, y, n, m);
+        gameGUI.gc.setFill(Color.valueOf(color));
     }
 
     /**
@@ -140,8 +140,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void ClearCanvasFromServer(int v, int v1, int v2, int v3, String color) {
-        chatGUI.gc.setFill(Color.WHITE);
-        chatGUI.gc.fillRect(v, v1, v2, v3);
+        gameGUI.gc.setFill(Color.WHITE);
+        gameGUI.gc.fillRect(v, v1, v2, v3);
     }
 
     /**
@@ -154,7 +154,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void sendRoundFromServer(int round) throws RemoteException {
-        Platform.runLater(() -> chatGUI.roundsLabel.setText("Round " + round + " of 5"));
+        Platform.runLater(() -> gameGUI.roundsLabel.setText("Round " + round + " of 5"));
     }
 
     /**
@@ -164,7 +164,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void updateRoundFromServer(int round) {
-        chatGUI.rnd = round;
+        gameGUI.rnd = round;
     }
 
     /**
@@ -174,8 +174,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void resetFromServer() {
-        chatGUI.setLock(0);
-        chatGUI.a = 0;
+        gameGUI.setLock(0);
+        gameGUI.a = 0;
     }
 
     /**
@@ -185,7 +185,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void checkFromServer() {
-        chatGUI.checkIfThisUserHasControl();
+        gameGUI.checkIfThisUserHasControl();
     }
 
     /**
@@ -196,8 +196,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void showNextWordToGuessFromServer() {
-        chatGUI.count++;
-        chatGUI.checkIfThisUserHasControl();
+        gameGUI.count++;
+        gameGUI.checkIfThisUserHasControl();
     }
 
     /**
@@ -207,7 +207,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void updateIndexWordFromServer(int index) {
-        chatGUI.count = index;
+        gameGUI.count = index;
     }
 
     /**
@@ -218,12 +218,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void setCountDownFromServer(int timeline) {
-        Platform.runLater(() -> chatGUI.countDown.setText(String.valueOf(timeline)));
+        Platform.runLater(() -> gameGUI.countDown.setText(String.valueOf(timeline)));
     }
 
     @Override
     public void updateCountDownVariableFromServer(int interval) {
-        chatGUI.interval = interval;
+        gameGUI.interval = interval;
     }
 
     /**
@@ -235,18 +235,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void pickWinnerFromServer(String winner) {
-        Platform.runLater(() -> {
-            chatGUI.alert.setTitle("GAME OVER");
-            chatGUI.alert.setHeaderText("THE WINNER IS..?");
-            chatGUI.alert.setContentText(winner + "\n\nWould you like to play again?");
-            chatGUI.another = chatGUI.alert.showAndWait();
-            if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.OK) {
-                chatGUI.start(chatGUI.primaryStage);
-            } else if (chatGUI.another.isPresent() && chatGUI.another.get() == ButtonType.CANCEL) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
+        ClientPaneGameOverFX gameOverPane = new ClientPaneGameOverFX();
+        Platform.runLater(() -> gameOverPane.startGameOverPane(gameGUI.primaryStage, winner));
     }
 
     /**
@@ -287,13 +277,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void updateUserListFromServer(String[] currentUsers) {
-        chatGUI.users.clear();
-        chatGUI.users.setText("Leaderboard\n");
+        gameGUI.users.clear();
+        gameGUI.users.setText("Leaderboard\n");
         for (String user : currentUsers) {
             if (user.equals(name)) {
-                chatGUI.users.appendText("You " + user + "\n");
+                gameGUI.users.appendText("You " + user + "\n");
             } else {
-                chatGUI.users.appendText(user + "\n");
+                gameGUI.users.appendText(user + "\n");
             }
         }
     }
@@ -308,18 +298,18 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      *                else enables the button.
      */
     private void enableDisableControl(boolean enable, boolean disable) {
-        chatGUI.btnClear.setVisible(enable);
-        chatGUI.btnDraw.setVisible(enable);
-        chatGUI.btnColorRed.setVisible(enable);
-        chatGUI.btnColorBlack.setVisible(enable);
-        chatGUI.btnColorPurple.setVisible(enable);
-        chatGUI.btnColorGreen.setVisible(enable);
-        chatGUI.btnColorBlue.setVisible(enable);
-        chatGUI.btnColorOrange.setVisible(enable);
-        chatGUI.btnColorPink.setVisible(enable);
-        chatGUI.btnColorYellow.setVisible(enable);
-        chatGUI.clearCanvas.setVisible(enable);
-        chatGUI.canvas.setDisable(disable);
+        gameGUI.btnClear.setVisible(enable);
+        gameGUI.btnDraw.setVisible(enable);
+        gameGUI.btnColorRed.setVisible(enable);
+        gameGUI.btnColorBlack.setVisible(enable);
+        gameGUI.btnColorPurple.setVisible(enable);
+        gameGUI.btnColorGreen.setVisible(enable);
+        gameGUI.btnColorBlue.setVisible(enable);
+        gameGUI.btnColorOrange.setVisible(enable);
+        gameGUI.btnColorPink.setVisible(enable);
+        gameGUI.btnColorYellow.setVisible(enable);
+        gameGUI.clearCanvas.setVisible(enable);
+        gameGUI.canvas.setDisable(disable);
     }
 
     /**
@@ -330,7 +320,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void incrementPointsAmountFromServer() {
-        chatGUI.a += 1;
+        gameGUI.a += 1;
     }
 
     /**
@@ -338,6 +328,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     @Override
     public void clearChatFromServer() {
-        chatGUI.chatSection.clear();
+        gameGUI.chatSection.clear();
     }
 }

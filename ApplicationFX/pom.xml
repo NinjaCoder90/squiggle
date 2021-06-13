@@ -71,7 +71,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <mainClass>com.misterycrew.Application.ClientPaneFX</mainClass>
+                    <mainClass>com.misterycrew.Application.ClientMainFX</mainClass>
                     <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>
                 </configuration>
             </plugin>

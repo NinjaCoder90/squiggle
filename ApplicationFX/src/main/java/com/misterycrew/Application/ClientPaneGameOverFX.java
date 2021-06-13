@@ -1,0 +1,63 @@
+package com.misterycrew.Application;
+
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+public class ClientPaneGameOverFX{
+
+    public void startGameOverPane(Stage primaryStage, String winner) {
+
+        ClientMainFX mainFX = new ClientMainFX();
+
+        ImageView imageGameOver = new ImageView();
+        try {
+            imageGameOver = new ImageView(new Image(new FileInputStream("src/main/resources/game-over.png"), 260, 260, false, false));
+        } catch (FileNotFoundException exception) {
+            exception.printStackTrace();
+        }
+        Label theWinnerIs = new Label();
+        theWinnerIs.setText("THE WINNER IS?");
+        theWinnerIs.getStyleClass().add("winner-Label");
+
+        Label winners = new Label();
+        winners.setText("CONGRATULATIONS TO " + winner.toUpperCase());
+        winners.getStyleClass().add("winner-Label");
+
+        Button exit = new Button("EXIT");
+        exit.getStyleClass().add("exit-Button");
+        exit.setOnMousePressed(e -> {
+//            mainFX.
+            Platform.exit();
+            System.exit(0);
+        });
+
+        Button tryAgain = new Button("TRY AGAIN");
+        tryAgain.getStyleClass().add("tryAgain-Button");
+        tryAgain.setOnMousePressed(e -> mainFX.start(primaryStage));
+
+        HBox tryAgainExit = new HBox();
+        tryAgainExit.getChildren().addAll(tryAgain,exit);
+        tryAgainExit.setAlignment(Pos.CENTER);
+        tryAgainExit.setSpacing(15);
+
+        VBox gameOverSection = new VBox(imageGameOver,theWinnerIs,winners,tryAgainExit);
+        gameOverSection.setAlignment(Pos.CENTER);
+        gameOverSection.setSpacing(30);
+
+        Scene gameOverScene = new Scene(gameOverSection,1388,695);
+        gameOverScene.getStylesheets().add("Style.css");
+        primaryStage.setScene(gameOverScene);
+        primaryStage.show();
+    }
+}

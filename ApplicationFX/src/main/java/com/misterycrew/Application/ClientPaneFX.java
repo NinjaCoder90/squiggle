@@ -39,7 +39,6 @@ import static java.util.stream.Collectors.toList;
 
 public class ClientPaneFX extends Application {
 
-    private final Label wordToGuess = new Label();
     protected Label roundsLabel = new Label(), countDown = new Label();
     protected Label scoreLabel = new Label();
     private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
@@ -63,12 +62,12 @@ public class ClientPaneFX extends Application {
     private int lock = 0;
     protected List<String> wordToGuessList;
     protected int interval;
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     Optional<ButtonType> another;
     public int a = 0;
     private final Button start = new Button("PLAY!");
     Alert alertToManyMembers = new Alert(Alert.AlertType.INFORMATION);
-
+    private final Label wordToGuess = new Label();
 
     /**
      * This method is the start method of the Application class.
@@ -83,7 +82,7 @@ public class ClientPaneFX extends Application {
 
         ImageView scrawlLogoView = new ImageView();
         try {
-            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png"),500,150,false,false));
+            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png"),450,150,false,false));
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
@@ -116,7 +115,7 @@ public class ClientPaneFX extends Application {
         startSection.getChildren().addAll(scrawlLogoView, startBox);
         startSection.getStyleClass().add("startSection");
 
-        Scene scene = new Scene(startSection);
+        Scene scene = new Scene(startSection,1388,695);
         scene.getStylesheets().add("Style.css");
 
         onCloseStageEvent();
@@ -581,10 +580,10 @@ public class ClientPaneFX extends Application {
      * @param userType boolean variable holding the type of user.
      * @return String containing the word.
      */
-    private String showWordToGuess(boolean userType) {
+    public String showWordToGuess(boolean userType) {
         Path path = Path.of("src/main/resources/WordsToGuess.txt");
         String wordToGuessString = "";
-        String wrd = "";
+        String wrd;
 
         try {
             wordToGuessList = Files.lines(path).collect(toList());
@@ -656,15 +655,5 @@ public class ClientPaneFX extends Application {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * This is the main method used to launch aur
-     * JavaFX Application.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 }

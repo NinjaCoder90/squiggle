@@ -1,0 +1,5 @@
+com\misterycrew\Application\Client.class
+com\misterycrew\Application\ClientPaneFX.class
+com\misterycrew\Application\ClientPaneGameOverFX.class
+com\misterycrew\Application\GameMechanic\Points.class
+com\misterycrew\Application\ClientMainFX.class

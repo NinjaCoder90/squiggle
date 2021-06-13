@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private static int round = 1;
-    private int interval = 91;
+    private int interval = 9;
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
     private static final CopyOnWriteArrayList<Users> usersList = new CopyOnWriteArrayList<>();
@@ -200,7 +200,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                     checkIfThisUserHasControl();
                     resetIndexGivePointsMethod();
                 }
-                interval = 91;
+                interval = 9;
             } else {
                 interval--;
                 usersList.forEach(throwingConsumerWrapper(
@@ -268,7 +268,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public void pickWinner() {
         map.entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .forEachOrdered(k -> list.add("Player: " + k.getKey() + " Points: " + k.getValue()));
+                .forEachOrdered(k -> list.add(k.getKey() + " with " + k.getValue()+ " points."));
         if (returnCurrentUsers() > 1) {
             usersList.forEach(throwingConsumerWrapper(user -> user.getClient().pickWinnerFromServer(list.get(0))));
         }

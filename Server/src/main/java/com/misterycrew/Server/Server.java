@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private static int round = 1;
-    private int interval = 9;
+    private int interval = 91;
     private final String line = "<<=========================================>>\n";
     private static final long serialVersionUID = 1L;
     private static final CopyOnWriteArrayList<Users> usersList = new CopyOnWriteArrayList<>();
@@ -200,7 +200,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                     checkIfThisUserHasControl();
                     resetIndexGivePointsMethod();
                 }
-                interval = 9;
+                interval = 91;
             } else {
                 interval--;
                 usersList.forEach(throwingConsumerWrapper(

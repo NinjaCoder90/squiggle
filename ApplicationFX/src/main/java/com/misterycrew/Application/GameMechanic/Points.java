@@ -4,14 +4,16 @@ import com.misterycrew.Application.ClientPaneFX;
 import com.misterycrew.Shared.ServerInterface;
 import com.misterycrew.Shared.Users;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
  * This class is used to assign
  * and keep trace of the points.
  */
-public class Points{
+public class Points implements Serializable {
 
+    private static final long serialVersionUID = 4215060926591614406L;
     ClientPaneFX gameGui;
 
     /**
@@ -56,6 +58,7 @@ public class Points{
      * points to the players (max.3) who guessed it.
      */
     public void validateGuessGivePoints() {
+
         if (gameGui.getLock() == 0 && !gameGui.getBtnDraw().isVisible()) {
             if (gameGui.getChatField().getText().compareToIgnoreCase(gameGui.getWordToGuessList().get(gameGui.count)) == 0) {
                 gameGui.getChatField().setText("word guessed");

@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
@@ -37,8 +38,10 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 
 
-public class ClientPaneFX extends Application {
+public class ClientPaneFX extends Application implements Serializable {
 
+
+    private static final long serialVersionUID = -5997589403994982301L;
     protected Label roundsLabel = new Label(), countDown = new Label();
     protected Label scoreLabel = new Label();
     protected final Canvas canvas = new Canvas(690, 620);

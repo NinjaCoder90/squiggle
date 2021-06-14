@@ -4,6 +4,8 @@ import javafx.stage.Stage;
 
 public class ClientMainFX extends ClientPaneFX{
 
+    private static final long serialVersionUID = 6632137613182351377L;
+
     @Override
     public void start(Stage primaryStage) {
         super.start(primaryStage);

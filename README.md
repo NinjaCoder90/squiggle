@@ -167,8 +167,18 @@ Enjoy the Game :)
 Pull requests are welcome. For major changes, please open an [issue](https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129/-/issues) first to discuss what you would like to change
 or which bug/issue you encountered.
 
+# Video presentation of the project
+
+- https://web.microsoftstream.com/video/1fa574bd-5095-4ab1-8460-9ba44f187dcd
+
 # The contributors of this project are
 
 1. Oussama Driouache
 2. Emanuele Pippa
 3. Emmanuel Scopelliti
+
+# References
+
+- https://docs.oracle.com/javase/7/docs/technotes/guides/rmi/hello/hello-world.html
+- https://www.baeldung.com/java-rmi
+- https://youtu.be/FX5hR-np-sg (https://github.com/TroelsMortensen/rmiexamples)

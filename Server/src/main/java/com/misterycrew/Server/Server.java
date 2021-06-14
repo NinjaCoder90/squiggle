@@ -46,6 +46,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         String hostName = "localhost";
         String serviceName = "distributedService";
 
+        //testare questo
         if (args.length == 2) {
             hostName = args[0];
             serviceName = args[1];

@@ -13,8 +13,11 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 
-public class ClientPaneGameOverFX {
+public class ClientPaneGameOverFX implements Serializable {
+
+    private static final long serialVersionUID = -7729936764728832664L;
 
     public void startGameOverPane(Stage primaryStage, String winner) {
 

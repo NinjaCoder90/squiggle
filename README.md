@@ -1,9 +1,6 @@
-# Scrawl Game [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
-
-
+# Scrawl Game [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ![Image of Scrawl game](doc/Image-Game.png)
-
 
 ## Our Java Project
 
@@ -14,7 +11,7 @@ RMI creates a connection between Client, Shared and Server, so that a client can
 
 - The Client that has temporary command is able to see the word and has some seconds to draw it as he/she wants to, using colors, and the pad available.
 
-- The others gamers have the goal to guess the right word corresponding to the picture that they see.
+- The other gamers have the goal to guess the right word corresponding to the picture that they see.
   The Client's control of drawing and guessing switches every round.
   The first one to guess will get 49 points; the second 39, and the third 33 points.
 

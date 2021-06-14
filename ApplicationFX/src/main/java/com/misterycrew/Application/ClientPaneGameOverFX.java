@@ -37,6 +37,7 @@ public class ClientPaneGameOverFX {
         VBox winnerLabelBox = new VBox();
         winnerLabelBox.getChildren().addAll(theWinnerIs,winners);
         winnerLabelBox.setSpacing(9);
+        winnerLabelBox.setAlignment(Pos.CENTER);
 
         Button exit = new Button("EXIT");
         exit.getStyleClass().add("exit-Button");

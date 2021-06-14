@@ -10,7 +10,7 @@ public class ClientMainFX extends ClientPaneFX{
     }
 
     /**
-     * This is the main method used to launch aur
+     * This is the main method used to launch our
      * JavaFX Application.
      *
      */

@@ -41,7 +41,6 @@ public class ClientPaneFX extends Application {
 
     protected Label roundsLabel = new Label(), countDown = new Label();
     protected Label scoreLabel = new Label();
-    private final Label labelSystemInfo = new Label("JavaFX " + System.getProperty("javafx.version") + ", running on Java " + System.getProperty("java.version") + ".");
     protected final Canvas canvas = new Canvas(690, 620);
     protected GraphicsContext gc = canvas.getGraphicsContext2D();
     protected ToggleButton btnDraw = new ToggleButton();

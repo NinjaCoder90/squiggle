@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.rmi.RemoteException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ServerTimerTest {
 
@@ -35,22 +34,6 @@ public class ServerTimerTest {
             Thread.sleep(2000);
 
             assertEquals( 89, server.getInterval());
-        } catch (RemoteException |
-                InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    @DisplayName("Round should be changed by 1")
-    void roundShouldBeIncremented(){
-        try {
-            Server server = new Server();
-            server.setTimerGame();
-            Thread.sleep(22000);
-            assertNotEquals( 1, server.getRound());
-            assertEquals(2, server.getRound());
-
         } catch (RemoteException |
                 InterruptedException e) {
             e.printStackTrace();

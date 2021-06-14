@@ -221,15 +221,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     /**
-     * getter used to retrieve the current round.
-     *
-     * @return (Integer) variable holding the current round.
-     */
-    public int getRound() {
-        return round;
-    }
-
-    /**
      * This method is used to update the count down variable for each user
      * in the server.
      */

@@ -2,7 +2,7 @@
 
 
 
-![Image of Scrawl game](images/Image-Game.png)
+![Image of Scrawl game](doc/Image-Game.png)
 
 
 ## Our Java Project
@@ -38,35 +38,35 @@ $ java --version
 
 **Here is a list of things to do:**
 
-  - To clone the **repo**
+  - To clone the **repo** run:
 
     ``
      $ git clone https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129.git
     ``
     
 
-  - To access the **repo**
+  - To access the **repo** run:
 
     ``
     $ cd pp_202021_misterycrew_id36129
     ``
     
 
-  - To **compile**, **package** and **install**
+  - To **compile**, **package** and **install** run:
 
     ``
     $ mvnw.cmd install
     ``
     
 
-  - To access the **Server** folder
+  - To access the **Server** folder run:
 
     ``
     $ cd Server
     ``
     
 
-  - To execute the **Server**
+  - To execute the **Server** run:
 
     ``
     $ java -jar target/Server-1.0-SNAPSHOT-jar-with-dependencies.jar
@@ -74,14 +74,14 @@ $ java --version
 
 **New terminal session**
 
-  - To access the **repo**
+  - To access the **repo** run:
 
     ``
     $ cd pp_202021_misterycrew_id36129
     ``
     
 
-  - To execute the **javafx** Application  
+  - To execute the **javafx** Application run: 
 
     ``
     $ mvnw.cmd -pl ApplicationFX javafx:run
@@ -125,7 +125,7 @@ Enjoy the Game :)
 - Method overriding
 - Lambdas
 - File I/O
-- Test hooks
+- Resource sharing (between threads)
 - Streams
 - Asynchronous programming
 - Collections

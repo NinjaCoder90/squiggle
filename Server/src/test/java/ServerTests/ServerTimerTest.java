@@ -40,6 +40,7 @@ public class ServerTimerTest {
             e.printStackTrace();
         }
     }
+
     @Test
     @DisplayName("Round should be changed by 1")
     void roundShouldBeIncremented(){

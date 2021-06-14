@@ -1,20 +1,18 @@
 package GameMechanicTests;
 
-import com.misterycrew.Application.ClientPaneFX;
 import com.misterycrew.Shared.Users;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class PointsTest {
-//    ClientPaneFX gameGUI = new ClientPaneFX();
 
     @Test
     @DisplayName("Should return the correct score")
     void ShouldReturnTheCorrectScore(){
         Users u1 = new Users("Marco", 50);
-        Users.setScore(50);
         assertEquals(50, u1.getOverloadScore());
     }
 
@@ -33,11 +31,4 @@ public class PointsTest {
         assertEquals(50, u1.getOverloadScore());
         assertEquals(100, u2.getOverloadScore());
     }
-
-//    @Test
-//    void should(){
-//
-//        assertNotEquals(gameGUI.showWordToGuess(true),"");
-//        assertTrue(gameGUI.showWordToGuess(false).contains("_"));
-//    }
 }

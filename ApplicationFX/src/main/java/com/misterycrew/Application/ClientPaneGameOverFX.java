@@ -24,10 +24,6 @@ public class ClientPaneGameOverFX implements Serializable {
 
         ClientMainFX mainFX = new ClientMainFX();
 
-//        ImageView imageGameOver = new ImageView(new Image(
-//                new File("src/main/resources/game-over.png").toURI().toString(),
-//                260, 260, false, false));
-
         ImageView imageGameOver = new ImageView(new Image("game-over.png", 260, 260, false, false));
 
         Label theWinnerIs = new Label();

@@ -30,6 +30,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private final List<String> list = new ArrayList<>();
     private int members;
     private final int totRounds = 5;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
     /**
      * Constructor for the Server class inheriting the super() class
@@ -182,8 +183,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     @Override
     public void setTimerGame() {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
-        Runnable countdown = () -> {
+        scheduler.scheduleAtFixedRate(() -> {
             if (interval == 0) {
                 sendClearCanvas(0, 0, 690, 620, "white");
                 if (round == totRounds) {
@@ -211,8 +211,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                         user -> user.getClient().setCountDownFromServer(interval)
                 ));
             }
-        };
-        scheduler.scheduleAtFixedRate(countdown, 0, 1, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -412,6 +411,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 }
                 updateUserList();
                 checkIfThisUserHasControl();
+                if (returnCurrentUsers() == 0){
+                    scheduler.shutdownNow();
+                    interval = 91;
+                }
                 break;
             }
         }

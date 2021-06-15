@@ -19,7 +19,7 @@ import java.util.Optional;
 public class Client extends UnicastRemoteObject implements ClientInterface {
 
     private static final long serialVersionUID = 7468891722773409712L;
-    ClientPaneFX gameGUI;
+    ClientPaneStartFX gameGUI;
     private final String clientServiceName;
     private final String name;
     public ServerInterface serverInterface;
@@ -28,11 +28,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     /**
      * Constructor.
      *
-     * @param gameGUI  object of the ClientPaneFX class.
+     * @param gameGUI  object of the ClientPaneStartFX class.
      * @param userName holding the username of the user.
      * @throws RemoteException if failed to export the object.
      */
-    public Client(ClientPaneFX gameGUI, String userName) throws RemoteException {
+    public Client(ClientPaneStartFX gameGUI, String userName) throws RemoteException {
         super();
         this.gameGUI = gameGUI;
         this.name = userName;
@@ -181,7 +181,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     /**
      * This method is used to check if the user has the control,
      * ie have the draw button visible.
-     * For further information see also: {@link ClientPaneFX#checkIfThisUserHasControl()} method.
+     * For further information see also: {@link ClientPaneStartFX#checkIfThisUserHasControl()} method.
      */
     @Override
     public void checkFromServer() {
@@ -192,7 +192,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * This method is used to increment the word to guess form the list,
      * and then checking if the user has the control to give the complete word,
      * otherwise give only the first and last letter.
-     * For further information see also: {@link ClientPaneFX#checkIfThisUserHasControl()} method.
+     * For further information see also: {@link ClientPaneStartFX#checkIfThisUserHasControl()} method.
      */
     @Override
     public void showNextWordToGuessFromServer() {

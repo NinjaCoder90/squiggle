@@ -38,7 +38,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 
 
-public class ClientPaneFX extends Application implements Serializable {
+public class ClientPaneStartFX extends Application implements Serializable {
 
 
     private static final long serialVersionUID = -5997589403994982301L;

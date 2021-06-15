@@ -1,6 +1,6 @@
 package com.misterycrew.Application.GameMechanic;
 
-import com.misterycrew.Application.ClientPaneFX;
+import com.misterycrew.Application.ClientPaneStartFX;
 import com.misterycrew.Shared.ServerInterface;
 import com.misterycrew.Shared.Users;
 
@@ -14,14 +14,14 @@ import java.rmi.RemoteException;
 public class Points implements Serializable {
 
     private static final long serialVersionUID = 4215060926591614406L;
-    ClientPaneFX gameGui;
+    ClientPaneStartFX gameGui;
 
     /**
      * Constructor of the Points class.
      *
-     * @param gameGui object class of ClientPaneFX.
+     * @param gameGui object class of ClientPaneStartFX.
      */
-    public Points(ClientPaneFX gameGui) {
+    public Points(ClientPaneStartFX gameGui) {
         this.gameGui = gameGui;
     }
 

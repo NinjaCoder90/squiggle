@@ -47,11 +47,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     public void startClient() throws RemoteException {
         String hostName = "localhost";
+        String serviceName = "distributedService";
         String[] details = new String[]{name, hostName, clientServiceName};
 
         try {
             Naming.rebind("rmi://" + hostName + "/" + clientServiceName, this);
-            String serviceName = "distributedService";
             serverInterface = (ServerInterface) Naming.lookup("rmi://" + hostName + "/" + serviceName);
         } catch (ConnectException | NotBoundException | MalformedURLException e) {
 

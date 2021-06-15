@@ -80,12 +80,11 @@ public class ClientPaneFX extends Application implements Serializable {
 
         this.primaryStage = primaryStage;
 
-        ImageView scrawlLogoView = new ImageView();
-        try {
-            scrawlLogoView = new ImageView(new Image(new FileInputStream("src/main/resources/img.png"),450,150,false,false));
-        } catch (FileNotFoundException exception) {
-            exception.printStackTrace();
-        }
+//        ImageView scrawlLogoView = new ImageView(new Image(
+//                new File("src/main/resources/Image-Start.png").toURI().toString(),
+//                450,150,false,false));
+
+        ImageView scrawlLogoView = new ImageView(new Image("Image-Start.png", 450,150,false,false));
         scrawlLogoView.getStyleClass().add("logo-View");
 
         Alert howToPlayAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -174,25 +173,26 @@ public class ClientPaneFX extends Application implements Serializable {
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
 
-        ImageView imagePoints = new ImageView();
-        try {
-            imagePoints = new ImageView(new Image(new FileInputStream("src/main/resources/star.png"), 25, 25, false, false));
-        } catch (FileNotFoundException exception) {
-            exception.printStackTrace();
-        }
+//        ImageView imagePoints = new ImageView(new Image(
+//                new File("src/main/resources/star.png").toURI().toString(),
+//                25, 25, false, false));
+
+        ImageView imagePoints = new ImageView(new Image("star.png",25, 25,false,false));
+
         scoreLabel.setText("Your Points: 0");
         scoreLabel.getStyleClass().add("scoreLabel-style");
+
         HBox pointsSection = new HBox();
         pointsSection.getChildren().addAll(imagePoints, scoreLabel);
         pointsSection.setAlignment(Pos.CENTER);
         pointsSection.setSpacing(26);
 
-        ImageView imageTime = new ImageView();
-        try {
-            imageTime = new ImageView(new Image(new FileInputStream("src/main/resources/deadline.png"), 25, 25, false, false));
-        } catch (FileNotFoundException exception) {
-            exception.printStackTrace();
-        }
+//        ImageView imageTime = new ImageView(new Image(
+//                new File("src/main/resources/deadline.png").toURI().toString(),
+//                25, 25, false, false));
+
+        ImageView imageTime = new ImageView(new Image("deadline.png", 25, 25, false, false));
+
         HBox timeSection = new HBox();
         timeSection.getChildren().addAll(imageTime, countDown, roundsLabel);
         roundsLabel.getStyleClass().add("roundsLabel-style");

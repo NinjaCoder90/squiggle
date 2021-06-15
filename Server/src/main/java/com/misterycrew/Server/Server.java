@@ -63,6 +63,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
 
+    /**
+     * Starts the RMI registry and creats
+     */
     public static void startRMIRegistry() {
         try {
             java.rmi.registry.LocateRegistry.createRegistry(1099);

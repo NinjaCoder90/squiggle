@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -23,12 +24,12 @@ public class ClientPaneGameOverFX implements Serializable {
 
         ClientMainFX mainFX = new ClientMainFX();
 
-        ImageView imageGameOver = new ImageView();
-        try {
-            imageGameOver = new ImageView(new Image(new FileInputStream("src/main/resources/game-over.png"), 260, 260, false, false));
-        } catch (FileNotFoundException exception) {
-            exception.printStackTrace();
-        }
+//        ImageView imageGameOver = new ImageView(new Image(
+//                new File("src/main/resources/game-over.png").toURI().toString(),
+//                260, 260, false, false));
+
+        ImageView imageGameOver = new ImageView(new Image("game-over.png", 260, 260, false, false));
+
         Label theWinnerIs = new Label();
         theWinnerIs.setText("CONGRATULATIONS TO THE WINNER");
         theWinnerIs.getStyleClass().add("winner-Label");

@@ -26,7 +26,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     protected boolean connectionProblem = false;
 
     /**
-     * Constructor.
+     * Constructor for the Client class.
      *
      * @param gameGUI  object of the ClientPaneStartFX class.
      * @param userName holding the username of the user.

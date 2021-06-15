@@ -26,14 +26,11 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -80,7 +77,7 @@ public class ClientPaneStartFX extends Application implements Serializable {
 
         this.primaryStage = primaryStage;
 
-        ImageView scrawlLogoView = new ImageView(new Image("Image-Start.png", 450,150,false,false));
+        ImageView scrawlLogoView = new ImageView(new Image("Image-Start.png", 450, 150, false, false));
         scrawlLogoView.getStyleClass().add("logo-View");
 
         Alert howToPlayAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -110,7 +107,7 @@ public class ClientPaneStartFX extends Application implements Serializable {
         startSection.getChildren().addAll(scrawlLogoView, startBox);
         startSection.getStyleClass().add("startSection");
 
-        Scene scene = new Scene(startSection,1388,695);
+        Scene scene = new Scene(startSection, 1388, 695);
         scene.getStylesheets().add("Style.css");
 
         onCloseStageEvent();
@@ -169,7 +166,7 @@ public class ClientPaneStartFX extends Application implements Serializable {
         marginRightPane.getChildren().addAll(rightPane);
         HBox.setMargin(rightPane, new Insets(50, 25, 25, 25));
 
-        ImageView imagePoints = new ImageView(new Image("star.png",25, 25,false,false));
+        ImageView imagePoints = new ImageView(new Image("star.png", 25, 25, false, false));
 
         scoreLabel.setText("Your Points: 0");
         scoreLabel.getStyleClass().add("scoreLabel-style");
@@ -618,13 +615,21 @@ public class ClientPaneStartFX extends Application implements Serializable {
      */
     private void sendMessage(KeyEvent keyEvent) {
         Points points = new Points(this);
+
         if (keyEvent.getCode() == KeyCode.ENTER) {
+
             points.validateGuessGivePoints();
+
             try {
-                client.serverInterface.updateChat(userName.getText(), chatField.getText());
+                if (lock == 1 && StringUtils.containsIgnoreCase(chatField.getText(),getWordToGuessList().get(count))){
+                    chatSection.appendText("word already guessed\n");
+                } else {
+                    client.serverInterface.updateChat(userName.getText(), chatField.getText());
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+
             chatField.clear();
         }
     }

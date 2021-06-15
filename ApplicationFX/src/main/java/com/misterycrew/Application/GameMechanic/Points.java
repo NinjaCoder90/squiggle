@@ -58,7 +58,6 @@ public class Points implements Serializable {
      * points to the players (max.3) who guessed it.
      */
     public void validateGuessGivePoints() {
-
         if (gameGui.getLock() == 0 && !gameGui.getBtnDraw().isVisible()) {
             if (gameGui.getChatField().getText().compareToIgnoreCase(gameGui.getWordToGuessList().get(gameGui.count)) == 0) {
                 gameGui.getChatField().setText("word guessed");

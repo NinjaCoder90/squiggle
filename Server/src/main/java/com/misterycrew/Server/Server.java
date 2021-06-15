@@ -47,7 +47,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         String hostName = "localhost";
         String serviceName = "distributedService";
 
-        //testare questo
         if (args.length == 2) {
             hostName = args[0];
             serviceName = args[1];
@@ -65,7 +64,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     /**
-     * Starts the RMI registry and creats
+     * Starts the RMI registry on port 1099 (default port).
      */
     public static void startRMIRegistry() {
         try {
@@ -179,7 +178,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     /**
      * This method is used to set the timer for each user in the server,
-     * and perform different actions each second per 80 seconds.
+     * and perform different actions each second per 90 seconds.
      */
     @Override
     public void setTimerGame() {

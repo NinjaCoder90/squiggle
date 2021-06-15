@@ -12,7 +12,7 @@ public class ClientMainFX extends ClientPaneStartFX {
     }
 
     /**
-     * This is the main method used to launch our
+     * This is the main method used to launch the
      * JavaFX Application.
      *
      */

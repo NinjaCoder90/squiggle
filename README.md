@@ -119,6 +119,7 @@ Enjoy the Game :)
 - Interfaces
 - Generics (methods or classes)
 - Exception handling
+- Custom Exceptions
 - Method overriding
 - Lambdas
 - File I/O

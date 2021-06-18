@@ -45,7 +45,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      *
      * @throws RemoteException if failed to export the object.
      */
-    public void startClient() throws RemoteException {
+    public void startClient() throws RemoteException, ConnectionProblemsException {
         String hostName = "localhost";
         String serviceName = "distributedService";
         String[] details = new String[]{name, hostName, clientServiceName};
@@ -61,6 +61,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 System.exit(0);
             }
             connectionProblem = true;
+            throw new ConnectionProblemsException();
         }
         if (!connectionProblem) {
             registerWithServer(details);

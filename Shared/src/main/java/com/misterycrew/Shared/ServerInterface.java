@@ -37,4 +37,6 @@ public interface ServerInterface extends Remote {
     int getMembers() throws RemoteException;
 
     int getTotRounds() throws RemoteException;
+
+    int getLocked() throws RemoteException;
 }

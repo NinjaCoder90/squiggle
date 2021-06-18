@@ -414,10 +414,8 @@ public class ClientPaneStartFX extends Application implements Serializable {
      */
     private void setCountDownLabel() {
         try {
-            if (client.serverInterface.returnCurrentUsers() != 1) {
                 client.serverInterface.updateCountDownVariable();
                 countDown.setText(String.valueOf(interval));
-            }
         } catch (RemoteException exception) {
             exception.printStackTrace();
         }
@@ -453,11 +451,11 @@ public class ClientPaneStartFX extends Application implements Serializable {
      * This method is used to:
      * 1) Initiate the timer if, is the first user.
      * 2) If is not the first user it will set the
-     * current round.
+     * current round into the Label.
      */
     private void updateRoundLabel() {
         try {
-            if (client.serverInterface.returnCurrentUsers() == 1) {
+            if (client.serverInterface.returnCurrentUsers() == 1 && client.serverInterface.getLocked() == 0) {
                 client.serverInterface.setTimerGame();
             }
             client.serverInterface.updateRound();
@@ -645,7 +643,7 @@ public class ClientPaneStartFX extends Application implements Serializable {
         try {
             client = new Client(this, userName.getText().replaceAll("\\W+", "_"));
             client.startClient();
-        } catch (RemoteException e) {
+        } catch (RemoteException | ConnectionProblemsException e) {
             e.printStackTrace();
         }
     }

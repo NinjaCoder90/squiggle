@@ -31,6 +31,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private int members;
     private final int totRounds = 5;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+    private int locked = 0;
 
     /**
      * Constructor for the Server class inheriting the super() class
@@ -42,7 +43,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         super();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ServerFailedToStartException {
         startRMIRegistry();
         String hostName = "localhost";
         String serviceName = "distributedService";
@@ -50,7 +51,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         if (args.length == 2) {
             hostName = args[0];
             serviceName = args[1];
-            System.out.println("args[0]: " + args[0] + "\nargs[1]: " + args[1]);
         }
 
         try {
@@ -60,6 +60,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         } catch (Exception e) {
             System.out.println("Server had problems starting");
+            throw new ServerFailedToStartException();
         }
     }
 
@@ -411,7 +412,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 updateUserList();
                 checkIfThisUserHasControl();
                 if (returnCurrentUsers() == 0){
-                    scheduler.shutdownNow();
+                    locked = 1;
                     interval = 91;
                 }
                 break;
@@ -440,6 +441,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     public int getTotRounds() {
         return totRounds;
+    }
+
+    /**
+     * Getter used to retrieve the state of the lock (ie 0 or 1) for
+     * the timer when all the user leave the game
+     * session before the game is over. By setting it to 1
+     * we make sure that if joins a new user in the same game session
+     * it will not call again the setTimerGame() method on top of the
+     * already existing one.
+     *
+     * @return (Integer) state of the lock 1 or 0
+     */
+    public int getLocked() {
+        return locked;
     }
 
     /**

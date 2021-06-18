@@ -413,7 +413,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 checkIfThisUserHasControl();
                 if (returnCurrentUsers() == 0){
                     locked = 1;
-                    interval = 91;
                 }
                 break;
             }

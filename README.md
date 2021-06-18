@@ -182,7 +182,7 @@ or which bug/issue you encountered.
 
 - https://docs.oracle.com/javase/7/docs/technotes/guides/rmi/hello/hello-world.html
 - https://www.baeldung.com/java-rmi
-- https://youtu.be/FX5hR-np-sg (https://github.com/TroelsMortensen/rmiexamples)
+- https://youtu.be/FX5hR-np-sg
 
 # Resources
 

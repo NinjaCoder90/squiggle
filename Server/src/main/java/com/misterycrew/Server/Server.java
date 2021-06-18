@@ -43,6 +43,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         super();
     }
 
+    /**
+     * This method creates an instance of the remote object implementation,
+     * exports the remote object, and then binds that instance to a name in a
+     * Java RMI registry.
+     *
+     * @param args (String) supplied command line arguments.
+     * @throws ServerFailedToStartException if the client had some connection problems.
+     */
     public static void main(String[] args) throws ServerFailedToStartException {
         startRMIRegistry();
         String hostName = "localhost";
@@ -66,6 +74,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     /**
      * Starts the RMI registry on port 1099 (default port).
+     * RMI registry is a simplified name service that allows
+     * clients to get a reference (a stub) to a remote object.
      */
     public static void startRMIRegistry() {
         try {

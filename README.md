@@ -185,9 +185,9 @@ or which bug/issue you encountered.
 
 # The contributors of this project are
 
-1. Oussama Driouache
-2. Emanuele Pippa
-3. Emmanuel Scopelliti
+1. Oussama Driouache 20036
+2. Emanuele Pippa 20009
+3. Emmanuel Scopelliti 20012
 
 # References
 

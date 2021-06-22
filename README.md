@@ -143,6 +143,11 @@ Enjoy the Game :)
   like assigning points, worked on finding bugs and errors during the implementation and helped
   fixing them.
 
+> **Emmanuel Scopelliti:**
+  The idea of this game started from Oussama, it was a nice idea so we started to work on it. 
+  We started to inform our self on the RMI implementation, and finally Oussama found the solution.
+  I developed the test side of the project, and helped on finding errors and bugs.
+
 • How did you use Git?
   
 > Mainly we used **Git** to better manage the different features of the project that we wanted to 
@@ -163,6 +168,12 @@ Enjoy the Game :)
   and it was always full of some unknown problem; without mention my IDE had SDK and JavaVersion issues. 
   Another challenge, but much easier to fix it, was to implement methods distinguishing the Clients: the solution we 
   used is looking everytime who made the access, the name he used and the order in which clients acted during the game.
+
+> **Emmanuel Scopelliti:**
+  Obviously the main difficulty was the RMI implementation. I never heard of it before, so it was a lot difficult to write
+  down the code for implement it. After a lot of work on it we understood its funcion and we went on, through unknown 
+  problems and errors.
+
 # Issues tracking 
 
 Pull requests are welcome. For major changes, please open an [issue](https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129/-/issues) first to discuss what you would like to change

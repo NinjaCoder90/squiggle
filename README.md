@@ -110,9 +110,6 @@ close all the ApplicationFX before the server).
 
 Enjoy the Game :)
 
-## These are my dependencies
-
-1. Java
 
 ## Programming Techniques used
 

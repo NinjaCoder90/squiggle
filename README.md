@@ -195,6 +195,12 @@ or which bug/issue you encountered.
 - https://www.baeldung.com/java-rmi
 - https://youtu.be/FX5hR-np-sg
 
+# Future features
+
+- [ ] Possibility to create a private game room to invite friends with a private url.
+- [ ] Possibility to votekick a player from the game session.
+- [ ] Hosting the game on an a server rather than the localhost.
+
 # Resources
 
 Icons from [Flaticon](https://www.flaticon.com/) by [Freepik](https://it.freepik.com/)

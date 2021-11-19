@@ -125,7 +125,7 @@ or which bug/issue you encountered.
 
 - [ ] Possibility to create a private game room to invite friends with a private url.
 - [ ] Possibility to votekick a player from the game session.
-- [ ] Hosting the game on an a server rather than the localhost.
+- [ ] Hosting the game on an a server rather than the localhost (maybe using socket.io).
 
 # Resources
 

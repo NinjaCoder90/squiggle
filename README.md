@@ -2,7 +2,7 @@
 
 ![Image of Scrawl game](doc/Image-Game.png)
 
-## Our Java Project
+## Java Project
 
 Based on RMI (Remote Method Invocation) implementation, this project lets the clients communicate among them through a Server.
 RMI creates a connection between Client, Shared and Server, so that a client can draw a picture, and the other users/clients can enjoy guessing the correct corresponding word.
@@ -110,81 +110,10 @@ close all the ApplicationFX before the server).
 
 Enjoy the Game :)
 
-
-## Programming Techniques used
-
-- Interfaces
-- Generics (methods or classes)
-- Exception handling
-- Custom Exceptions
-- Method overriding
-- Lambdas
-- File I/O
-- Resource sharing (between threads)
-- Streams
-- Asynchronous programming
-- Collections
-
-## Experience in this project
-
-• How you organized yourselves to work on it?
-
-> **Oussama Driouache:** 
-  First I searched for ways to permit the communication between different JVM, and then I have started to
-  develop it. Afterwards, I started building up the javafx layout with the different panes. 
-
-> **Emanuele Pippa:**
-  After Oussama proposed this type of project/game, we looked for information about it on web-sites, 
-  trying to understand how to work and how to implement RMI (Remote Method Invocation). Nevertheless, the final 
-  solution has been found by my colleague Oussama. In the development of this game I wrote some methods, 
-  like assigning points, worked on finding bugs and errors during the implementation and helped
-  fixing them.
-
-> **Emmanuel Scopelliti:**
-  The idea of this game started from Oussama, it was a nice idea so we started to work on it. 
-  We started to inform our self on the RMI implementation, and finally Oussama found the solution.
-  I developed the test side of the project, and helped on finding errors and bugs.
-
-• How did you use Git?
-  
-> Mainly we used **Git** to better manage the different features of the project that we wanted to 
-  implement by creating branches and then discussing together which feature was most suited to get the job done correctly. Finally, we merged the branches into the master branch. 
-
-• The main challenges you faced (at least one per member)?
-
-> **Oussama Driouache:**
-  As far as I'm concerned the main challenge that I have 
-  faced was using the RMI(Remote Method Invocation) used to communicate between
-  client and Server, and passing objects from the server to the clients, since I have never developed nor used distributed version 
-  architecture. Another challenge that I have faced was setting up maven,
-  since this is a distributed version having the server, and the Application javafx we had to create
-  submodules with a parent maven project with which each one of the modules having his own pom.xml file. Apart from this the project was really challenging and at the same time fun to develop.
-
-> **Emanuele Pippa:**
-  The main difficulty I met was the RMI: After knew the concepts, the main problem was to write it, 
-  and it was always full of some unknown problem; without mention my IDE had SDK and JavaVersion issues. 
-  Another challenge, but much easier to fix it, was to implement methods distinguishing the Clients: the solution we 
-  used is looking everytime who made the access, the name he used and the order in which clients acted during the game.
-
-> **Emmanuel Scopelliti:**
-  Obviously the main difficulty was the RMI implementation. I never heard of it before, so it was a lot difficult to write
-  down the code for implement it. After a lot of work on it we understood its funcion and we went on, through unknown 
-  problems and errors.
-
 # Issues tracking 
 
 Pull requests are welcome. For major changes, please open an [issue](https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129/-/issues) first to discuss what you would like to change
 or which bug/issue you encountered.
-
-# Video presentation of the project
-
-- https://web.microsoftstream.com/video/1fa574bd-5095-4ab1-8460-9ba44f187dcd
-
-# The contributors of this project are
-
-1. Oussama Driouache 20036
-2. Emanuele Pippa 20009
-3. Emmanuel Scopelliti 20012
 
 # References
 

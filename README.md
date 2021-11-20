@@ -38,14 +38,14 @@ $ java --version
   - To clone the **repo** run:
 
     ``
-     $ git clone https://gitlab.inf.unibz.it/Oussama.Driouache/pp_202021_misterycrew_id36129.git
+     $ git clone https://github.com/NinjaCoder90/squiggle.git
     ``
     
 
   - To access the **repo** run:
 
     ``
-    $ cd pp_202021_misterycrew_id36129
+    $ cd squiggle
     ``
     
 
@@ -74,7 +74,7 @@ $ java --version
   - To access the **repo** run:
 
     ``
-    $ cd pp_202021_misterycrew_id36129
+    $ cd squiggle
     ``
     
 
